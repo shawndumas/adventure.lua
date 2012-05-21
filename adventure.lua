@@ -1,4 +1,3 @@
---local pretty = require('pretty')
 _ = require('underscore')
 
 math.randomseed(os.time())
