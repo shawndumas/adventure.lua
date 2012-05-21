@@ -300,7 +300,7 @@ end
 
 function clearing_examine_clearing (event, state)
     return function ()
-        if not detectinventoryitem('the_strong_thin_vine') then
+        if not (detectinventoryitem('the_strong_thin_vine') and detectinventoryitem('the_fishing_rod')) then
             print(wrap('\n\nAn extraordinarily strong and thin vine is wrapped around the far side of rock. With difficulty you pry it loose. (Vine taken.)'))
             insertinventoryitem('the_strong_thin_vine')
         else
@@ -670,7 +670,7 @@ function fishing (effective)
             if effective then
                 if detectinventoryitem('a_small_fly') then
                     r = r .. '\n\nYou use the small fly as bait.'
-                    if math.random(1, 10) > 7 then
+                    if math.random(1, 10) > 6 then
                         r = r .. '\n\n[You catch a fish.]'
                         insertinventoryitem('the_nice_big_fish')
                     else
@@ -815,6 +815,43 @@ insertaction(
         }
     },
     disembowelthefish()
+)
+
+-- The start of creating an action: bait
+function bait ()
+    return function (t)
+        return function ()
+            local r = stringifyaction(t)
+            r = r .. '\n\n[You have baited the hook.]'
+            return r
+        end
+    end
+end
+
+insertaction(
+    actions,
+    {
+        verbs = {
+            'push',
+            'put',
+            'touch',
+            'use',
+        },
+        nouns = {
+            first = { 'a_small_fly' },
+            second = { 'the_fishing_rod' }
+        },
+        predicates = {
+            'at',
+            'in',
+            'on',
+            'over',
+            'to',
+            'with',
+            'under',
+        }
+    },
+    bait()
 )
 
 go()
