@@ -300,7 +300,7 @@ end
 
 function clearing_examine_clearing (event, state)
     return function ()
-        if not (detectinventoryitem('the_strong_thin_vine') and detectinventoryitem('the_fishing_rod')) then
+        if not (detectinventoryitem('the_strong_thin_vine') or detectinventoryitem('the_fishing_rod')) then
             print(wrap('\n\nAn extraordinarily strong and thin vine is wrapped around the far side of rock. With difficulty you pry it loose. (Vine taken.)'))
             insertinventoryitem('the_strong_thin_vine')
         else
