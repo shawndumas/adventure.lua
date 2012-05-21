@@ -287,7 +287,7 @@ end
 
 function river_examine_river (event, state)
     return function ()
-        if not detectinventoryitem('the_hook_shaped_bone') then
+        if not (detectinventoryitem('the_hook_shaped_bone') or detectinventoryitem('the_fishing_rod')) then
             print(wrap('\n\nWhen you peer into the beautiful shining water, a long killer spearfish jumps out at you. Startled you slip and catch yourself just before falling in. From your new vantage point you see a small hooked shaped bone in the shallows. (Bone taken.)'))
             insertinventoryitem('the_hook_shaped_bone')
         else
