@@ -257,7 +257,7 @@ end
 -- examination function factories
 function woods_examine_woods (event, state)
     return function ()
-        if not detectinventoryitem('the_branch') then
+        if not (detectinventoryitem('the_branch') or detectinventoryitem('the_fishing_rod')) then
             print(wrap('\n\nA fallen branch lies among the strewn leaves. (Branch taken.)'))
             insertinventoryitem('the_branch')
         elseif not detectinventoryitem('the_tinder') then
