@@ -172,7 +172,7 @@ local function clearing_south_meadow (event, state)
             s = 'Go South; continuing in to the meadow',
             w = 'Go West; continuing in to the meadow'
         }
-        if not detectinventoryitem('a_small_fly') then
+        if not (detectinventoryitem('the_small_fly') or conditions.bait) then
             insertcommand('c', 'catch')
             room.options.c = 'Catch one; if you can'
         end
@@ -205,7 +205,7 @@ local function meadow_catch_meadow (event, state)
             s = 'Go South; continuing in to the meadow',
             w = 'Go West; continuing in to the meadow'
         }
-        insertinventoryitem('a_small_fly')
+        insertinventoryitem('the_small_fly')
         return state
     end
 end
@@ -233,7 +233,7 @@ local function neverendingmeadow (event, state)
             s = 'Go South; continuing in to the meadow',
             w = 'Go West; continuing in to the meadow'
         }
-        if not detectinventoryitem('a_small_fly') then
+        if not (detectinventoryitem('the_small_fly') or conditions.bait) then
             insertcommand('c', 'catch')
             room.options.c = 'Catch one; if you can'
         end
@@ -384,7 +384,8 @@ locations = makeFSM({
 })
 
 conditions = {
-    milesinthemeadow = 0
+    milesinthemeadow = 0,
+    bait = false
 }
 
 room = {
@@ -668,15 +669,23 @@ function fishing (effective)
         return function ()
             local r = stringifyaction(t)
             if effective then
-                if detectinventoryitem('a_small_fly') then
-                    r = r .. '\n\nYou use the small fly as bait.'
+                if detectinventoryitem('the_small_fly') or conditions.bait then
+                    if not conditions.bait then
+                        r = r .. '\n\nYou use the small fly as bait.'
+                    else
+                        conditions.bait = false
+                    end
                     if math.random(1, 10) > 6 then
                         r = r .. '\n\n[You catch a fish.]'
-                        insertinventoryitem('the_nice_big_fish')
+                        if detectinventoryitem('the_nice_big_fish') then
+                            r = r .. '\n\n[Since you already had a fish you eat this one; it was good.]'
+                        else
+                            insertinventoryitem('the_nice_big_fish')
+                        end
                     else
                         r = r .. '\n\nNo fish and the fly is gone too. Better luck next time.'
                     end
-                    deleteinventoryitem('a_small_fly')
+                    deleteinventoryitem('the_small_fly')
                 else
                     r = r .. '\n\nYou stand around for what feels like hours only to realize that you will catch nothing without bait.'
                 end
@@ -823,6 +832,8 @@ function bait ()
         return function ()
             local r = stringifyaction(t)
             r = r .. '\n\n[You have baited the hook.]'
+            deleteinventoryitem('the_small_fly')
+            conditions.bait = true
             return r
         end
     end
@@ -838,8 +849,12 @@ insertaction(
             'use',
         },
         nouns = {
-            first = { 'a_small_fly' },
-            second = { 'the_fishing_rod' }
+            first = { 'the_small_fly' },
+            second = {
+                'the_fishing_rod',
+                'the_hook_shaped_bone',
+                'the_hook_and_vine'
+            }
         },
         predicates = {
             'at',

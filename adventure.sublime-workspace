@@ -1,0 +1,630 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"m",
+				"milesinthemeadow"
+			],
+			[
+				"fis",
+				"fish"
+			],
+			[
+				"lit",
+				"the_lit_torch"
+			],
+			[
+				"fi",
+				"fish"
+			],
+			[
+				"the_",
+				"the_flint"
+			],
+			[
+				"d",
+				"detectinventoryitem"
+			],
+			[
+				"de",
+				"deleteinventoryitem"
+			],
+			[
+				"clo",
+				"thin_strip_of_cloth"
+			],
+			[
+				"e",
+				"effective"
+			],
+			[
+				"re",
+				"response"
+			],
+			[
+				"pre",
+				"pretty"
+			],
+			[
+				"r",
+				"response"
+			],
+			[
+				"pr",
+				"previous"
+			],
+			[
+				"c",
+				"clearing"
+			],
+			[
+				"ri",
+				"rivulet"
+			],
+			[
+				"invent",
+				"inventory"
+			],
+			[
+				"s",
+				"second"
+			],
+			[
+				"f",
+				"first"
+			],
+			[
+				"v",
+				"verb"
+			],
+			[
+				"fun",
+				"function	function"
+			],
+			[
+				"all",
+				"allverbs"
+			],
+			[
+				"mod",
+				"modifier"
+			],
+			[
+				"mo",
+				"modifiers"
+			],
+			[
+				"ta",
+				"tableprint"
+			],
+			[
+				"is",
+				"isenemy"
+			],
+			[
+				"p",
+				"prowesses"
+			],
+			[
+				"l",
+				"location"
+			],
+			[
+				"ro",
+				"room"
+			],
+			[
+				"la",
+				"lakeroom"
+			],
+			[
+				"Su",
+				"nSuddenly"
+			],
+			[
+				"loca",
+				"locations"
+			],
+			[
+				"ns",
+				"nsew"
+			],
+			[
+				"at",
+				"atrium"
+			],
+			[
+				"scr",
+				"scrawled"
+			],
+			[
+				"con",
+				"conditions"
+			],
+			[
+				"co",
+				"computer"
+			],
+			[
+				"kno",
+				"know"
+			],
+			[
+				"wo",
+				"would"
+			],
+			[
+				"yo",
+				"Your"
+			],
+			[
+				"t",
+				"true"
+			],
+			[
+				"rock",
+				"rock-slides"
+			],
+			[
+				"in",
+				"intersection"
+			],
+			[
+				"ca",
+				"cavein"
+			],
+			[
+				"lo",
+				"location"
+			],
+			[
+				"loc",
+				"locations"
+			],
+			[
+				"fo",
+				"function	function"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "howToFindYourDragon.lua",
+			"settings":
+			{
+				"buffer_size": 26475,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "theHomingRingDX.lua",
+			"settings":
+			{
+				"buffer_size": 27999,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "Packages/Lua/Lua.sublime-build",
+	"command_palette":
+	{
+		"height": 196.0,
+		"selected_items":
+		[
+			[
+				"mark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"lua",
+				"Set Syntax: Lua"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"INSTA",
+				"Package Control: Install Package"
+			],
+			[
+				"INSA",
+				"Package Control: Install Package"
+			],
+			[
+				"PR",
+				"Package Control: Install Package"
+			],
+			[
+				"lisp",
+				"Set Syntax: Lisp"
+			]
+		],
+		"width": 528.0
+	},
+	"console":
+	{
+		"height": 146.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/Users/sdumas/Dropbox/xfer/src/lua/adventure.lua/adventure.lua",
+		"/C/Users/sdumas/Dropbox/xfer/src/lua/adventure.lua/adventure.sublime-workspace",
+		"/C/Users/christopherdumas/theTenthFreighter.lua",
+		"/C/Users/sandradumas/Documents/Dropbox/xfer/src/lua/adventure.lua/adventure.lua",
+		"/C/Users/sandradumas/Documents/Dropbox/xfer/src/lua/adventure.lua/howToFindYourDragon.lua",
+		"/C/Users/sandradumas/Documents/Dropbox/xfer/src/lua/adventure.lua/theHomingRingDX.lua",
+		"/C/Users/sandradumas/Documents/Dropbox/xfer/src/lua/adventure.lua/README.md",
+		"/C/Users/sandradumas/Documents/Dropbox/xfer/src/lua/theHomingRingDX.lua",
+		"/C/Users/christopherdumas/hhh",
+		"/C/Users/sandradumas/Documents/Dropbox/xfer/src/lua/scratch.lua",
+		"/C/Users/sandradumas/Documents/Dropbox/xfer/src/lua/adventure.lua",
+		"/C/Users/sandradumas/Documents/Dropbox/xfer/src/lua/howToFindYourDragon.lua",
+		"/C/Users/sandradumas/Documents/Dropbox/xfer/src/lua/old/inventory.lua",
+		"/C/Users/sandradumas/Documents/Dropbox/xfer/src/lua/inventory.lua",
+		"/C/Users/sandradumas/Documents/Dropbox/xfer/src/lua/torchActions.lua",
+		"/C/Users/sandradumas/AppData/Local/Temp/7zO9E0B.tmp/advent.dat",
+		"/C/Users/sandradumas/AppData/Local/Temp/7zOF138.tmp/advent.for",
+		"/C/Users/sandradumas/Documents/Dropbox/xfer/src/lua/lightTheTorch.lua",
+		"/C/Users/sandradumas/Documents/Dropbox/xfer/src/lua/hello.lua",
+		"/C/Users/sandradumas/Documents/Dropbox/xfer/src/lua/kombat.lua",
+		"/C/Users/sandradumas/Documents/Dropbox/xfer/src/lua/PrettyPrint.lua",
+		"/C/Users/sandradumas/Documents/Dropbox/xfer/src/lua/tpretty.lua",
+		"/C/Users/sandradumas/Documents/Dropbox/xfer/src/lua/utilities.lua",
+		"/C/Users/christopherdumas/howToFindYourDragon.lua",
+		"/C/Users/christopherdumas/theHomingRingDX.lua",
+		"/C/Program Files/clisp-2.49/clisp.exe",
+		"/C/Users/sandradumas/Desktop/scratchthumbs.db",
+		"/C/Users/christopherdumas/lalaland.lua",
+		"/C/Users/sandradumas/Desktop/theHomingRingDX.lua.bak",
+		"/C/Users/christopherdumas/fighting engen.lua",
+		"/C/Users/sandradumas/Desktop/kombat.lua",
+		"/C/Users/christopherdumas/maze.lua",
+		"/C/Users/sandradumas/backup.lua",
+		"/C/Users/sandradumas/theHomingRing.lua",
+		"/C/Users/sandradumas/Documents/test.lua",
+		"/C/Program Files/LEGO Software/LEGO MINDSTORMS NXT/MINDSTORMSNXT.exe",
+		"/C/Users/sandradumas/twitterpw.txt",
+		"/C/Users/sandradumas/Desktop/x.lua",
+		"/C/Users/sandradumas/AppData/Roaming/Sublime Text 2/Packages/User/ParseLua.py",
+		"/C/Users/sandradumas/AppData/Roaming/Sublime Text 2/Packages/Lua/ParseLua.py",
+		"/C/Users/christopherdumas/Documents/lua/missions/variables.lua",
+		"/C/Windows/System32/st.bat",
+		"/C/Users/christopherdumas/Documents/lua/missions/asserts.lua",
+		"/C/Users/sandradumas/st.bat",
+		"/C/Users/sandradumas/Documents/learn_lua/class.lua",
+		"/C/Users/sandradumas/Documents/learn_lua/ex1.lua",
+		"/C/Program Files/Lua/5.1/lua/alien.lua",
+		"/C/Program Files/Lua/5.1/lua/class.lua",
+		"/C/Program Files/Lua/5.1/lua/classlib.lua",
+		"/C/Program Files/Lua/5.1/lua/string_ext.lua",
+		"/C/Program Files/Lua/5.1/lua/modules.lua",
+		"/C/Program Files/Lua/5.1/lua/socket/ftp.lua",
+		"/C/Program Files/Lua/5.1/lua/markdown.lua",
+		"/C/Program Files/Lua/5.1/lua/base.lua",
+		"/C/Users/sandradumas/AppData/Roaming/Sublime Text 2/Packages/User/Preferences.sublime-settings",
+		"/C/Users/sandradumas/AppData/Local/Sifteo/Siftrunner/Users/shawndumas@me.com/Apps/1.siftapp",
+		"/C/Users/sandradumas/Desktop/usr/csd/adventure.lisp~",
+		"/C/Users/christopherdumas/Desktop/adventure.lisp",
+		"/C/Users/sandradumas/Desktop/usr/csd/adventure.lisp",
+		"/C/Users/sandradumas/Desktop/lispbox/clisp-2.38/lispbox-register.el",
+		"/C/jabberwocky/install.bat"
+	],
+	"find":
+	{
+		"height": 36.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"detectinventoryitem",
+			"insertinventoryitem('the_small_fly')",
+			"the_small_fly",
+			"true",
+			"the_small_fly",
+			") ",
+			"the_small_fly",
+			"a_small_fly",
+			"sandradumas",
+			"a_fish_liver",
+			"nice_big_fish",
+			"meadow_north_clearing",
+			"room.options.c",
+			"river_east_pit",
+			"the_flint_and_steel",
+			"crawlspace_west_passage",
+			"woods_climb_tree",
+			"woods_north_river",
+			"rivulet_west_clearing",
+			"den",
+			"log",
+			"entertocontinue",
+			"sconce",
+			"ground_north_woods",
+			"crawlspace_east_chamber",
+			"insertinventoryitem('the_rocks')",
+			"crawlspace_east_chamber",
+			"_chamber",
+			"cleared",
+			"Hit [enter]",
+			"Hit [enter] to exit.",
+			"[enter]",
+			"passage_north_impasse",
+			"impasse_south_passage",
+			"crawlspace_west_passage",
+			"passage_north_impasse",
+			".nsew",
+			".atrium",
+			"intersection_north_atrium",
+			"conditions.atrium",
+			"intersection_north_atrium",
+			"impasse_examine_impasse",
+			"intersection_north_atrium",
+			"unlit",
+			"intersection_north_atrium",
+			"wrap(",
+			"wrap",
+			"description",
+			"impasse_examine_impasse",
+			"crawlspace_west_passage",
+			"impasse_examine_impasse",
+			"passage_north_impasse",
+			"impasse_south_passage",
+			"passage_north_impasse",
+			"\\.s",
+			"\\.\\s\\s",
+			"\\w*_\\w*_\\w*",
+			"enterinventory",
+			"== x",
+			"response",
+			"inventory",
+			"previousaction",
+			"pickax",
+			"< 1",
+			"> 1",
+			"detectinventoryitem('')",
+			"littorch",
+			"pickax",
+			"insertcommand",
+			"intersection_north_atrium",
+			"require",
+			"inventory",
+			"crawlspace_west_passage",
+			"intersection_north_atrium",
+			"elseif conditions.nsew == 6 and not conditions.littorch then",
+			"            room.options['i'] = 'Inventory...'\n            insertcommand('i', 'inventory')",
+			"deletecommand('i', 'inventory')",
+			"xyzzy",
+			"not conditions.littorch",
+			"entrance_north_passage",
+			"not conditions.littorch",
+			"then",
+			"not conditions.littorch",
+			"crawlspace_west_passage",
+			"impasse_south_passage",
+			"crawlspace_west_passage",
+			"entrance_north_passage",
+			"impasse_south_passage",
+			"crawlspace_west_passage",
+			"impasse_south_passage",
+			"room.options['i'] = 'Inventory...'",
+			"crawlspace_west_passage",
+			"torch",
+			"intersection_north_atrium",
+			"deletecommand('i', 'inventory')",
+			"passage_south_entrance",
+			"passage_north_impasse",
+			"passage_east_crawlspace",
+			"impasse_south_passage",
+			"entrance_north_passage",
+			"crawlspace_west_passage",
+			"local function crawlspace_west_passage (event, state)\n",
+			"crawlspace_west_passage",
+			"atrium_south_intersection",
+			"'i'",
+			"crawlspace_west_passage",
+			"together_",
+			"river_north_den",
+			"rivulet_west_clearing",
+			"clearing_east_rivulet",
+			"river_west_rivule",
+			"den_south_river",
+			"pit_west_river",
+			"rivulet_east_river",
+			"woods_north_river",
+			"ground_north_woods",
+			"flying_north_woods",
+			"  ",
+			"pretty",
+			"                --local pretty = require('pretty')\npretty",
+			"deleteinventoryitem",
+			"allnouns",
+			"prompt",
+			"embued",
+			"the_strip_of_cloth",
+			"allverbs",
+			"allnouns",
+			"allverbs"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"shawndumas",
+			"the_empty_sconce",
+			". ",
+			".\\s",
+			"fruitless_examination ",
+			" ",
+			"__,",
+			", ",
+			"    ",
+			", ",
+			"    ",
+			"'",
+			"_",
+			"rapids",
+			"yourself",
+			"Go South; back to the entrance.",
+			"lake",
+			"if conditions.nsew > 0 then",
+			"    ",
+			""
+		],
+		"reverse": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "howToFindYourDragon.lua",
+					"settings":
+					{
+						"buffer_size": 26475,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								753,
+								753
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 101.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "theHomingRingDX.lua",
+					"settings":
+					{
+						"buffer_size": 27999,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								430,
+								430
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 34.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 229.0,
+	"status_bar_visible": true
+}
