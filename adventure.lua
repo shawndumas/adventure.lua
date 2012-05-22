@@ -1,4 +1,4 @@
-_ = require('underscore')
+_ = require 'underscore'
 
 math.randomseed(os.time())
 

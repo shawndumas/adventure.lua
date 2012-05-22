@@ -1,4 +1,4 @@
-require('adventure')
+require 'adventure'
 
 local goodclicks = {
     '[You hear a crisp click that echoes throughout the cave.]\n\n',

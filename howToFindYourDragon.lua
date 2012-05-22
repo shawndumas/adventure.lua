@@ -1,4 +1,4 @@
-require('adventure')
+require 'adventure'
 
 --========================================================
 -- location function factories
