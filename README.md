@@ -9,4 +9,6 @@ He's 10; His eyes where glazing over when I was talking about abstract concepts.
 
 Once I got one complete adventure written he was excited to do the second with me. Now hopefully he'll take one from cradle to grave with only oversight from me.
 
-[Check out this very small example adventure](https://github.com/shawndumas/adventure.lua/blob/master/xampleLand.lua)
+[Check out the 'Getting Started' page...](https://github.com/shawndumas/adventure.lua/wiki/Getting-Started)
+
+[Check out this very small example adventure...](https://github.com/shawndumas/adventure.lua/blob/master/xampleLand.lua)
