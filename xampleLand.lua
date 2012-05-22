@@ -167,7 +167,7 @@ locations = makeFSM({
     { 'room02', 'examine', 'room02', fruitless_examination },
     { 'room02', 'south',   'room01', room02_south_room01 },
     -- default starting area
-    { 'start',    'begin',   'room00',   start_begin_room00 }
+    { 'start',  'begin',   'room00', start_begin_room00 }
 })
 
 --========================================================
