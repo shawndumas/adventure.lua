@@ -4,7 +4,7 @@ require 'adventure'
 -- settings, globals, and defaults
 --========================================================
 
--- leave as is please
+-- leave as is, please
 room = {
     location = '',
     description = '',
@@ -16,7 +16,7 @@ conditions = {
     timesinroom00 = 1,
 }
 
--- what rooms can an enemy be in (note enemies will be in one of these rooms each turn)
+-- what rooms can an enemy be in (note: enemies will be in one of these rooms each turn)
 roomswithenemies = {
     'room01',
     'room02',
@@ -42,18 +42,18 @@ enemytypes = {
 -- configuration for the fighting sub-engine
 cfg = {
     hero = {
-        hitmin = 3,
-        hitmax = 5,
-        tohit = 5,
+        hitmin = 3, -- where you start
+        hitmax = 5, -- max bad-ass-ness
+        tohit = 5, -- what the hero has to beat to hit the enemy
     },
     enemy = {
-        hitmin = 2,
-        hitmax = 7,
-        mintohit = 4,
-        maxtohit = 5,
-        minhp = 1,
-        maxhp = 4,
-        hitmod = 3,
+        hitmin = 2, -- enemyattack = math.random(cfg.enemy.hitmin, cfg.enemy.hitmax)
+        hitmax = 7, -- enemyattack = math.random(cfg.enemy.hitmin, cfg.enemy.hitmax)
+        mintohit = 4, -- the min of what an enemy has to beat to hit the hero (the enemy is menacing)
+        maxtohit = 5, -- the max of what an enemy has to beat to hit the hero (the enemy is savage)
+        minhp = 1, -- the min hit points for an enemy (this matches the enemytypes)
+        maxhp = 4, -- the max hit points for an enemy (this matches the enemytypes)
+        hitmod = 3, -- the diff between the maxtohit and the two types of enemies (menacing, savage)
     }
 }
 
