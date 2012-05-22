@@ -1,17 +1,17 @@
 -- Copyright (c) 2009 Marcus Irven
---  
+--
 -- Permission is hereby granted, free of charge, to any person
 -- obtaining a copy of this software and associated documentation
 -- files (the "Software"), to deal in the Software without
 -- restriction, including without limitation the rights to use,
--- copy, modify, merge, publish, distribute, sublicense, and/or sell
+-- copy, modify, merge, publish, distribute, sub-license, and / or sell
 -- copies of the Software, and to permit persons to whom the
 -- Software is furnished to do so, subject to the following
 -- conditions:
---  
+--
 -- The above copyright notice and this permission notice shall be
 -- included in all copies or substantial portions of the Software.
---  
+--
 -- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 -- EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 -- OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -21,7 +21,7 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 -- OTHER DEALINGS IN THE SOFTWARE.
 
---- Underscore is a set of utility functions for dealing with 
+--- Underscore is a set of utility functions for dealing with
 -- iterators, arrays, tables, and functions.
 
 local Underscore = { funcs = {} }
@@ -37,8 +37,8 @@ end
 
 function Underscore.iter(list_or_iter)
 	if type(list_or_iter) == "function" then return list_or_iter end
-	
-	return coroutine.wrap(function() 
+
+	return coroutine.wrap(function()
 		for i=1,#list_or_iter do
 			coroutine.yield(list_or_iter[i])
 		end
@@ -51,7 +51,7 @@ function Underscore.range(start_i, end_i, step)
 		start_i = 1
 	end
 	step = step or 1
-	local range_iter = coroutine.wrap(function() 
+	local range_iter = coroutine.wrap(function()
 		for i=start_i, end_i, step do
 			coroutine.yield(i)
 		end
@@ -93,22 +93,22 @@ function Underscore.funcs.map(list, func)
 	local mapped = {}
 	for i in Underscore.iter(list) do
 		mapped[#mapped+1] = func(i)
-	end	
+	end
 	return mapped
 end
 
-function Underscore.funcs.reduce(list, memo, func)	
+function Underscore.funcs.reduce(list, memo, func)
 	for i in Underscore.iter(list) do
 		memo = func(memo, i)
-	end	
+	end
 	return memo
 end
 
 function Underscore.funcs.detect(list, func)
 	for i in Underscore.iter(list) do
 		if func(i) then return i end
-	end	
-	return nil	
+	end
+	return nil
 end
 
 function Underscore.funcs.select(list, func)
@@ -129,7 +129,7 @@ end
 
 function Underscore.funcs.all(list, func)
 	func = func or Underscore.identity
-	
+
 	-- TODO what should happen with an empty list?
 	for i in Underscore.iter(list) do
 		if not func(i) then return false end
@@ -140,17 +140,17 @@ end
 function Underscore.funcs.any(list, func)
 	func = func or Underscore.identity
 
-	-- TODO what should happen with an empty list?	
+	-- TODO what should happen with an empty list?
 	for i in Underscore.iter(list) do
 		if func(i) then return true end
-	end	
+	end
 	return false
 end
 
 function Underscore.funcs.include(list, value)
 	for i in Underscore.iter(list) do
 		if i == value then return true end
-	end	
+	end
 	return false
 end
 
@@ -166,8 +166,8 @@ end
 
 function Underscore.funcs.min(list, func)
 	func = func or Underscore.identity
-	
-	return Underscore.funcs.reduce(list, { item = nil, value = nil }, function(min, item) 
+
+	return Underscore.funcs.reduce(list, { item = nil, value = nil }, function(min, item)
 		if min.item == nil then
 			min.item = item
 			min.value = func(item)
@@ -184,8 +184,8 @@ end
 
 function Underscore.funcs.max(list, func)
 	func = func or Underscore.identity
-	
-	return Underscore.funcs.reduce(list, { item = nil, value = nil }, function(max, item) 
+
+	return Underscore.funcs.reduce(list, { item = nil, value = nil }, function(max, item)
 		if max.item == nil then
 			max.item = item
 			max.value = func(item)
@@ -204,7 +204,7 @@ function Underscore.funcs.to_array(list)
 	local array = {}
 	for i in Underscore.iter(list) do
 		array[#array+1] = i
-	end	
+	end
 	return array
 end
 
@@ -212,7 +212,7 @@ function Underscore.funcs.reverse(list)
 	local reversed = {}
 	for i in Underscore.iter(list) do
 		table.insert(reversed, 1, i)
-	end	
+	end
 	return reversed
 end
 
@@ -234,7 +234,7 @@ function Underscore.funcs.first(array, n)
 		local first = {}
 		n = math.min(n,#array)
 		for i=1,n do
-			first[i] = array[i]			
+			first[i] = array[i]
 		end
 		return first
 	end
@@ -251,7 +251,7 @@ end
 
 function Underscore.funcs.slice(array, start_index, length)
 	local sliced_array = {}
-	
+
 	start_index = math.max(start_index, 1)
 	local end_index = math.min(start_index+length-1, #array)
 	for i=start_index, end_index do
@@ -262,7 +262,7 @@ end
 
 function Underscore.funcs.flatten(array)
 	local all = {}
-	
+
 	for ele in Underscore.iter(array) do
 		if type(ele) == "table" then
 			local flattened_element = Underscore.funcs.flatten(ele)
@@ -317,7 +317,7 @@ end
 function Underscore.funcs.extend(destination, source)
 	for k,v in pairs(source) do
 		destination[k] = v
-	end	
+	end
 	return destination
 end
 
@@ -330,16 +330,16 @@ function Underscore.funcs.is_equal(o1, o2, ignore_mt)
 	local ty1 = type(o1)
 	local ty2 = type(o2)
 	if ty1 ~= ty2 then return false end
-	
+
 	-- non-table types can be directly compared
 	if ty1 ~= 'table' then return o1 == o2 end
-	
+
 	-- as well as tables which have the metamethod __eq
 	local mt = getmetatable(o1)
 	if not ignore_mt and mt and mt.__eq then return o1 == o2 end
-	
+
 	local is_equal = Underscore.funcs.is_equal
-	
+
 	for k1,v1 in pairs(o1) do
 		local v2 = o2[k1]
 		if v2 == nil or not is_equal(v1,v2, ignore_mt) then return false end
@@ -361,7 +361,7 @@ function Underscore.funcs.compose(...)
 			return funcs[1](...)
 		end
 	end
-	
+
 	local funcs = {...}
 	return function(...)
 		return call_funcs(funcs, ...)
@@ -380,7 +380,7 @@ function Underscore.funcs.curry(func, argument)
 	end
 end
 
-function Underscore.functions() 
+function Underscore.functions()
 	return Underscore.keys(Underscore.funcs)
 end
 
@@ -400,9 +400,9 @@ Underscore.funcs.tail = Underscore.funcs.rest
 local function wrap_functions_for_oo_support()
 	local function value_and_chained(value_or_self)
 		local chained = false
-		if getmetatable(value_or_self) == Underscore then 
+		if getmetatable(value_or_self) == Underscore then
 			chained = value_or_self.chained
-			value_or_self = value_or_self._val 
+			value_or_self = value_or_self._val
 		end
 		return value_or_self, chained
 	end
@@ -414,9 +414,9 @@ local function wrap_functions_for_oo_support()
 
 	for fn, func in pairs(Underscore.funcs) do
 		Underscore[fn] = function(obj_or_self, ...)
-			local obj, chained = value_and_chained(obj_or_self)	
-			return value_or_wrap(func(obj, ...), chained)		
-		end	 
+			local obj, chained = value_and_chained(obj_or_self)
+			return value_or_wrap(func(obj, ...), chained)
+		end
 	end
 end
 
