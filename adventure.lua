@@ -461,11 +461,11 @@ prompt = (function ()
             game.name ..", really... it's not that hard."
         }
         local wisecrack = wisecracks[math.random(1, #wisecracks)]
-        local line = '================'
+        local line =  string:rep('=', 60)
         if response == 'win' or response == 'xyzzy' then
-            print("\n" .. line .. line .. line .. "\n\n\tPoof you won! Not!\n\n\tGood try, but that is an old worn-out magic word.\n\n" .. line .. line .. line .. "\n")
+            print("\n" .. line .. "\n\n\tPoof you won! Not!\n\n\tGood try, but that is an old worn-out magic word.\n\n" .. line .. "\n")
         else
-            print('\n\n' .. line .. line .. line .. '\n\n\t'.. wisecrack .. '\n\n\tTry an option actually listed.\n\n' .. line .. line .. line .. '\n')
+            print('\n\n' .. line .. '\n\n\t'.. wisecrack .. '\n\n\tTry an option actually listed.\n\n' .. line .. '\n')
         end
     end
 
@@ -485,7 +485,7 @@ prompt = (function ()
         if isenemy then fight() end
 
         if not game.stop then
-            local line = '\n--------------------'
+            local line = '\n' .. string:rep('-', 20)
             local header = line .. '\n' .. room.location:upper() .. line
             print(header)
 

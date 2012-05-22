@@ -16,7 +16,7 @@ local badclicks = {
 
 local function atrium_south_intersection (event, state)
     return function ()
-        room.description = 'It takes a moment for your eyes to adjust to the darkness. You feel the coolness of the breeze upon your back.\n\nYou hear the sound of water to the East, the Southern opening is very dim, and to the North the largest opening whence comes the cool breeze.'
+        room.description = 'It takes a moment for your eyes to adjust to the comparative darkness. You feel the coolness of the breeze upon your back.\n\nYou hear the sound of water to the East, the Southern opening is very dim, and to the North the largest opening whence comes the cool breeze.'
         room.options = {
             n = 'Go North; towards the natural atrium.',
             e = 'Go East; following the sounds of water.',
