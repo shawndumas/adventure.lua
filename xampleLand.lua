@@ -49,8 +49,8 @@ cfg = {
     enemy = {
         hitmin = 2, -- enemyattack = math.random(cfg.enemy.hitmin, cfg.enemy.hitmax)
         hitmax = 7, -- enemyattack = math.random(cfg.enemy.hitmin, cfg.enemy.hitmax)
-        mintohit = 4, -- the min of what an enemy has to beat to hit the hero (the enemy is menacing)
-        maxtohit = 5, -- the max of what an enemy has to beat to hit the hero (the enemy is savage)
+        mintohit = 4, -- the min of what an enemy has to beat to hit the hero (the enemy is savage)
+        maxtohit = 5, -- the max of what an enemy has to beat to hit the hero (the enemy is menacing)
         minhp = 1, -- the min hit points for an enemy (this matches the enemytypes)
         maxhp = 4, -- the max hit points for an enemy (this matches the enemytypes)
         hitmod = 3, -- the diff between the maxtohit and the two types of enemies (menacing, savage)
