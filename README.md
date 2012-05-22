@@ -8,3 +8,5 @@ There are two complete, albeit short, examples for him / you to get started with
 He's 10; His eyes where glazing over when I was talking about abstract concepts. He really liked Scratch because it was immediately available; very audio-visual. What sold me on Lua was Codea and iLuaBox. My son was stoked to know that he will soon be getting an iPad.
 
 Once I got one complete adventure written he was excited to do the second with me. Now hopefully he'll take one from cradle to grave with only oversight from me.
+
+[Check out this very small example adventure](https://github.com/shawndumas/adventure.lua/blob/master/xampleLand.lua)
