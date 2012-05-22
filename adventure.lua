@@ -345,33 +345,32 @@ local function fight ()
     end
 
     local enemy = makeenemy()
-    print('\n\tYou are attacked by ' .. enemy.description .. '!\n')
+    local line = '\n' .. string.rep('*', 80)
+    print(line .. '\n\tYou are attacked by ' .. enemy.description .. '!' .. line)
     repeat
         local heroattack = math.random(cfg.hero.hitmin, cfg.hero.hitmax) + prowesses[hero.prowess.state]
         if heroattack > cfg.hero.tohit then
-            print('\tYou hit the ' .. enemy.type .. '.')
+            print('\n\tYou hit the ' .. enemy.type .. '.\n')
             enemy.hp = enemy.hp - 1
         else
-            print('\tYou attack the ' .. enemy.type .. ' but it dodges out of the way.')
+            print('\n\tYou attack the ' .. enemy.type .. ' but it dodges out of the way.\n')
         end
         if enemy.hp < 1 then
-            print('\tYou have killed ' .. enemy.description .. '.')
+            print('\tYou have killed ' .. enemy.description .. '.\n')
             stop = true
         else
             local enemyattack = math.random(cfg.enemy.hitmin, cfg.enemy.hitmax)
             if enemyattack >= enemy.tohit then
                 hero.health = kombat[hero.health.state]['hit'].action()
-                print('\t' .. hero.health.report)
+                print('\t' .. hero.health.report .. '\n')
             else
-                print('\tThe ' .. enemy.type .. ' misses you.')
+                print('\tThe ' .. enemy.type .. ' misses you.\n')
             end
         end
-        if not (hero.health.state == 'dead' or enemy.hp == 0) then
-            print('\n\tHit [enter] to continue.\n')
-            local response = io.read()
-        else
+        if (hero.health.state == 'dead' or enemy.hp == 0) then
             stop = true
         end
+        entertocontinue()
     until stop
     if hero.health.state == 'dead' then
         game.stop = true
@@ -380,7 +379,8 @@ local function fight ()
     else
         if hero.prowess.state ~= 'very_lethal' and hero.prowess.state ~= 'dead' then
             hero.prowess = experience[hero.prowess.state]['trained'].action()
-            print('\n\t[' .. hero.prowess.report .. ']')
+            print('\n\t[' .. hero.prowess.report .. ']\n')
+            entertocontinue()
         end
     end
 end
@@ -394,8 +394,10 @@ function insertcommand(k, v)
 end
 
 function entertocontinue ()
+    print(string.rep('_', 80))
     io.write('\tHit [enter] to continue.')
     io.read()
+    print('\n')
 end
 
 function fruitless_examination (event, state)
@@ -461,11 +463,11 @@ prompt = (function ()
             game.name ..", really... it's not that hard."
         }
         local wisecrack = wisecracks[math.random(1, #wisecracks)]
-        local line =  string:rep('=', 60)
+        local line =  '\n' .. string.rep('=', 80) .. '\n'
         if response == 'win' or response == 'xyzzy' then
-            print("\n" .. line .. "\n\n\tPoof you won! Not!\n\n\tGood try, but that is an old worn-out magic word.\n\n" .. line .. "\n")
+            print(line .. "\n\tPoof you won! Not!\n\n\tGood try, but that is an old worn-out magic word.\n" .. line)
         else
-            print('\n\n' .. line .. '\n\n\t'.. wisecrack .. '\n\n\tTry an option actually listed.\n\n' .. line .. '\n')
+            print('\n' .. line .. '\n\t'.. wisecrack .. '\n\n\tTry an option actually listed.\n' .. line)
         end
     end
 
@@ -485,11 +487,11 @@ prompt = (function ()
         if isenemy then fight() end
 
         if not game.stop then
-            local line = '\n' .. string:rep('-', 20)
-            local header = line .. '\n' .. room.location:upper() .. line
+            local line = '\n' .. string.rep('-', 80) .. '\n'
+            local header = line .. room.location:upper() .. line
             print(header)
 
-            print('\n' .. wrap(room.description))
+            print( wrap(room.description))
 
             if not game.done then
                 room.options.q = 'Quit'
@@ -511,7 +513,8 @@ prompt = (function ()
                 if not isenemy then
                     if hero.health.state ~= 'healthy' then
                         hero.health = kombat[hero.health.state]['healed'].action()
-                        print('\n\t[' .. hero.health.report .. ']')
+                        print('\n\t[' .. hero.health.report .. ']\n')
+                        entertocontinue()
                     end
                 end
             else
