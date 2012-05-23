@@ -351,7 +351,7 @@ local function rockslide_north_intersection (event, state)
     end
 end
 
-function impasse_examine_impasse (event, state)
+local function impasse_examine_impasse (event, state)
     return function ()
         if (conditions.impasse and conditions.cavein and not detectinventoryitem('the_pickax')) then
             print(wrap('\n\nYou start to examine the area, but you sit down in despair. Will you ever find the one thing that can reunite you to your beloved father?\n\nPutting your head in your hands you lean forward and see something half covered in the dim floor of an alcove. Moving the dirt and debris you see a rusted discarded pickax on the floor.\n\n(Pickax taken.)\n\n'))
@@ -364,7 +364,7 @@ function impasse_examine_impasse (event, state)
     end
 end
 
-function passage_examine_passage (event, state)
+local function passage_examine_passage (event, state)
     return function ()
         if conditions.nsew == 6 then
             print(wrap('\n\nIn the alcove you see a flint and steel, tinder, and an oil imbued strip of cloth.\n\n(You take the components.)\n\n'))
@@ -381,7 +381,7 @@ function passage_examine_passage (event, state)
     end
 end
 
-function atrium_examine_atrium (event, state)
+local function atrium_examine_atrium (event, state)
     return function ()
         if not detectinventoryitem('the_unlit_torch') then
             print(wrap('\n\nAt the center of the North wall is the outline of a door made of the rock face. There is no doorknob, no hinges, no obvious way to open the door. The only feature is an empty sconce in the center of the door.\n\nAn unlit torch lies upon the floor next to deeply scrawled letters, "NSEW".\n\n(You take the unlit torch.)\n\n'))
@@ -444,18 +444,6 @@ locations = makeFSM({
     { 'start',        'begin',   'outside',      start_begin_outside }
 })
 
-conditions = {
-    impasse = false,
-    cavein = false,
-    cleared = false,
-    rockslide = false,
-    swim = false,
-    wet = false,
-    atrium = false,
-    nsew = 0,
-    raft = true,
-}
-
 roomswithenemies = {
     'atrium',
     'chamber',
@@ -466,12 +454,6 @@ roomswithenemies = {
     'lake',
     'passage',
     'rockslide'
-}
-
-room = {
-    location = '',
-    description = '',
-    options = {}
 }
 
 commands = {
@@ -490,20 +472,21 @@ enemytypes = {
     'badger'
 }
 
+-- configuration for the fighting sub-engine
 cfg = {
     hero = {
-        hitmin = 3,
-        hitmax = 5,
-        tohit = 5
+        hitmin = 3, -- where you start -- heroattack = math.random(cfg.hero.hitmin, cfg.hero.hitmax)
+        hitmax = 5, -- max bad-ass-ness -- heroattack = math.random(cfg.hero.hitmin, cfg.hero.hitmax)
+        tohit = 5, -- what the hero has to beat to hit the enemy
     },
     enemy = {
-        hitmin = 2,
-        hitmax = 7,
-        mintohit = 4,
-        maxtohit = 5,
-        minhp = 1,
-        maxhp = 4,
-        hitmod = 3
+        hitmin = 2, -- enemyattack = math.random(cfg.enemy.hitmin, cfg.enemy.hitmax)
+        hitmax = 7, -- enemyattack = math.random(cfg.enemy.hitmin, cfg.enemy.hitmax)
+        mintohit = 4, -- the min of what an enemy has to beat to hit the hero (the enemy is savage)
+        maxtohit = 5, -- the max of what an enemy has to beat to hit the hero (the enemy is menacing)
+        minhp = 1, -- the min hit points for an enemy (this matches the enemytypes)
+        maxhp = 4, -- the max hit points for an enemy (this matches the enemytypes)
+        hitmod = 3, -- the diff between the maxtohit and the two types of enemies (menacing, savage)
     }
 }
 
@@ -519,8 +502,20 @@ inventory = {}
 
 actions = actions or {}
 
+local conditions = {
+    impasse = false,
+    cavein = false,
+    cleared = false,
+    rockslide = false,
+    swim = false,
+    wet = false,
+    atrium = false,
+    nsew = 0,
+    raft = true,
+}
+
 -- The start of creating an action: clearing the cave-in
-function clearcavein (effective)
+local function clearcavein (effective)
     local times = 1
     return function (t)
         return function ()
@@ -612,7 +607,7 @@ insertaction(
 )
 
 -- The start of creating an action: lighting the unlit torch
-function lighttorch (step)
+local function lighttorch (step)
     lighttorchsteps = {
         cloth_on_torch = false,
         flint_and_rock_over_tinder = false,
@@ -716,7 +711,7 @@ insertaction(
 )
 
 -- The start of creating an action: putting the lit torch in the sconce
-function torchinsconce ()
+local function torchinsconce ()
     return function (t)
         return function ()
             local r = ''

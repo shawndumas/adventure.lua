@@ -2,7 +2,14 @@ _ = require 'underscore'
 
 math.randomseed(os.time())
 
-allverbs = {
+-- leave as is, please
+room = {
+    location = '',
+    description = '',
+    options = {},
+}
+
+local allverbs = {
     'drop',
     'hit',
     'pull',
@@ -13,7 +20,7 @@ allverbs = {
     'use',
 }
 
-allpredicates = {
+local allpredicates = {
     'after',
     'apart_from',
     'at',

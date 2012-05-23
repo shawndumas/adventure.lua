@@ -255,7 +255,7 @@ end
 
 --========================================================
 -- examination function factories
-function woods_examine_woods (event, state)
+local function woods_examine_woods (event, state)
     return function ()
         if not (detectinventoryitem('the_branch') or detectinventoryitem('the_fishing_rod')) then
             print(wrap('\n\nA fallen branch lies among the strewn leaves. (Branch taken.)'))
@@ -272,7 +272,7 @@ function woods_examine_woods (event, state)
     end
 end
 
-function tree_examine_tree (event, state)
+local function tree_examine_tree (event, state)
     return function ()
         if not detectinventoryitem('the_tinder') then
             print(wrap('\n\nYou see an abandon nest. There is a tuft of down that can be used as tinder. Also, the creative weaver wove a thin strip of cloth forming a part of the walls of the nest. (Tinder and thin strip of cloth taken.)'))
@@ -285,7 +285,7 @@ function tree_examine_tree (event, state)
     end
 end
 
-function river_examine_river (event, state)
+local function river_examine_river (event, state)
     return function ()
         if not (detectinventoryitem('the_hook_shaped_bone') or detectinventoryitem('the_fishing_rod')) then
             print(wrap('\n\nWhen you peer into the beautiful shining water, a long killer spearfish jumps out at you. Startled you slip and catch yourself just before falling in. From your new vantage point you see a small hooked shaped bone in the shallows. (Bone taken.)'))
@@ -298,7 +298,7 @@ function river_examine_river (event, state)
     end
 end
 
-function clearing_examine_clearing (event, state)
+local function clearing_examine_clearing (event, state)
     return function ()
         if not (detectinventoryitem('the_strong_thin_vine') or detectinventoryitem('the_fishing_rod')) then
             print(wrap('\n\nAn extraordinarily strong and thin vine is wrapped around the far side of rock. With difficulty you pry it loose. (Vine taken.)'))
@@ -311,7 +311,7 @@ function clearing_examine_clearing (event, state)
     end
 end
 
-function rivulet_examine_rivulet (event, state)
+local function rivulet_examine_rivulet (event, state)
     return function ()
         if not detectinventoryitem('the_flint') then
             print(wrap('\n\nYou see a flint among the rocks on the embankment. (Flint taken.)'))
@@ -327,7 +327,7 @@ function rivulet_examine_rivulet (event, state)
     end
 end
 
-function pit_examine_pit (event, state)
+local function pit_examine_pit (event, state)
     return function ()
         if not detectinventoryitem('the_rock') then
             print(wrap("\n\nYou see a nice hand sized rock among the lesser rocks in the pit's bottom. (Rock taken.)"))
@@ -383,17 +383,6 @@ locations = makeFSM({
     { 'start',    'begin',   'ground',   start_begin_ground }
 })
 
-conditions = {
-    milesinthemeadow = 0,
-    bait = false
-}
-
-room = {
-    location = '',
-    description = '',
-    options = {}
-}
-
 roomswithenemies = {
     'cave',
     'clearing'
@@ -414,20 +403,21 @@ enemytypes = {
     'large_wolf'
 }
 
+-- configuration for the fighting sub-engine
 cfg = {
     hero = {
-        hitmin = 3,
-        hitmax = 5,
-        tohit = 5
+        hitmin = 3, -- where you start -- heroattack = math.random(cfg.hero.hitmin, cfg.hero.hitmax)
+        hitmax = 5, -- max bad-ass-ness -- heroattack = math.random(cfg.hero.hitmin, cfg.hero.hitmax)
+        tohit = 5, -- what the hero has to beat to hit the enemy
     },
     enemy = {
-        hitmin = 2,
-        hitmax = 7,
-        mintohit = 4,
-        maxtohit = 5,
-        minhp = 1,
-        maxhp = 4,
-        hitmod = 3
+        hitmin = 2, -- enemyattack = math.random(cfg.enemy.hitmin, cfg.enemy.hitmax)
+        hitmax = 7, -- enemyattack = math.random(cfg.enemy.hitmin, cfg.enemy.hitmax)
+        mintohit = 4, -- the min of what an enemy has to beat to hit the hero (the enemy is savage)
+        maxtohit = 5, -- the max of what an enemy has to beat to hit the hero (the enemy is menacing)
+        minhp = 1, -- the min hit points for an enemy (this matches the enemytypes)
+        maxhp = 4, -- the max hit points for an enemy (this matches the enemytypes)
+        hitmod = 3, -- the diff between the maxtohit and the two types of enemies (menacing, savage)
     }
 }
 
@@ -443,8 +433,14 @@ inventory = {}
 
 actions = actions or {}
 
+local conditions = {
+    milesinthemeadow = 0,
+    bait = false
+}
+
+
 -- The start of creating an action: making the fishing rod
-function makefishingrod (step)
+local function makefishingrod (step)
     return function (t)
         return function ()
             local r = stringifyaction(t)
@@ -560,7 +556,7 @@ insertaction(
 )
 
 -- The start of creating an action: lighting the unlit torch
-function lighttorch (step)
+local function lighttorch (step)
     lighttorchsteps = {
         cloth_on_torch = false,
         flint_and_rock_over_tinder = false,
@@ -664,7 +660,7 @@ insertaction(
 )
 
 -- The start of creating an action: fishing with the fishing rod
-function fishing (effective)
+local function fishing (effective)
     return function (t)
         return function ()
             local r = stringifyaction(t)
@@ -750,7 +746,7 @@ insertaction(
 )
 
 -- The start of creating an action: getting the oil imbued cloth
-function oilimbuethecloth ()
+local function oilimbuethecloth ()
     return function (t)
         return function ()
             local r = stringifyaction(t)
@@ -789,7 +785,7 @@ insertaction(
 )
 
 -- The start of creating an action: getting the liver
-function disembowelthefish ()
+local function disembowelthefish ()
     return function (t)
         return function ()
             local r = stringifyaction(t)
@@ -827,7 +823,7 @@ insertaction(
 )
 
 -- The start of creating an action: bait
-function bait ()
+local function bait ()
     return function (t)
         return function ()
             local r = stringifyaction(t)

@@ -4,18 +4,6 @@ require 'adventure'
 -- settings, globals, and defaults
 --========================================================
 
--- leave as is, please
-room = {
-    location = '',
-    description = '',
-    options = {},
-}
-
--- for recording author configurable states, events, and conditions
-conditions = {
-    timesinroom00 = 1,
-}
-
 -- what rooms can an enemy be in (note: enemies will be in one of these rooms each turn)
 roomswithenemies = {
     'room01',
@@ -42,8 +30,8 @@ enemytypes = {
 -- configuration for the fighting sub-engine
 cfg = {
     hero = {
-        hitmin = 3, -- where you start
-        hitmax = 5, -- max bad-ass-ness
+        hitmin = 3, -- where you start -- heroattack = math.random(cfg.hero.hitmin, cfg.hero.hitmax)
+        hitmax = 5, -- max bad-ass-ness -- heroattack = math.random(cfg.hero.hitmin, cfg.hero.hitmax)
         tohit = 5, -- what the hero has to beat to hit the enemy
     },
     enemy = {
@@ -73,6 +61,11 @@ inventory = inventory or {
 
 -- the action table for the inventory sub-engine
 actions = actions or {}
+
+-- for recording author configurable states, events, and conditions
+local conditions = {
+    timesinroom00 = 1,
+}
 
 --========================================================
 -- location function factories
@@ -126,7 +119,7 @@ end
 --========================================================
 -- examination function factories
 --========================================================
-function room01_examine_room01 (event, state)
+local function room01_examine_room01 (event, state)
     return function ()
         if not (detectinventoryitem('the_proverbial_square_peg') or detectinventoryitem('a_conundrum')) then
             print(wrap('\n\nYou discover the square peg; yes, _that_ square peg. (Peg taken.)\nChoose (i)nventory and do what you have to do.'))
@@ -173,7 +166,7 @@ locations = makeFSM({
 --========================================================
 -- create an action: make a conundrum
 --========================================================
-function makeaconundrum ()
+local function makeaconundrum ()
     return function (t)
         return function ()
             local r = stringifyaction(t)
