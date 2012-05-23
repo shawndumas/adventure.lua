@@ -408,7 +408,7 @@ cfg = {
     hero = {
         hitmin = 3, -- where you start -- heroattack = math.random(cfg.hero.hitmin, cfg.hero.hitmax)
         hitmax = 5, -- max bad-ass-ness -- heroattack = math.random(cfg.hero.hitmin, cfg.hero.hitmax)
-        tohit = 5, -- what the hero has to beat to hit the enemy
+        tohit = 5, -- what the hero has to beat to hit the enemy -- heroattack > cfg.hero.tohit
     },
     enemy = {
         hitmin = 2, -- enemyattack = math.random(cfg.enemy.hitmin, cfg.enemy.hitmax)
