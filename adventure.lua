@@ -4,7 +4,7 @@ local function iter (list_or_iter)
     if type(list_or_iter) == "function" then return list_or_iter end
 
     return coroutine.wrap (function()
-        for i=1,#list_or_iter do
+        for i = 1, #list_or_iter do
             coroutine.yield(list_or_iter[i])
         end
     end)
@@ -27,7 +27,7 @@ end
 local function reject (list, func)
     local selected = {}
     for i in iter(list) do
-        if not func(i) then selected[#selected+1] = i end
+        if not func(i) then selected[#selected + 1] = i end
     end
     return selected
 end
