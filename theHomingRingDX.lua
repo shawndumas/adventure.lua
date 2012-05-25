@@ -502,7 +502,7 @@ inventory = {}
 
 actions = actions or {}
 
-local conditions = {
+conditions = {
     impasse = false,
     cavein = false,
     cleared = false,

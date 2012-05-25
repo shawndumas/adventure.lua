@@ -433,7 +433,7 @@ inventory = {}
 
 actions = actions or {}
 
-local conditions = {
+conditions = {
     milesinthemeadow = 0,
     bait = false
 }

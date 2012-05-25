@@ -63,7 +63,7 @@ inventory = inventory or {
 actions = actions or {}
 
 -- for recording author configurable states, events, and conditions
-local conditions = {
+conditions = {
     timesinroom00 = 1,
 }
 
