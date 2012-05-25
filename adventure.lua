@@ -1,6 +1,36 @@
-_ = require 'underscore'
-
 math.randomseed(os.time())
+
+local function iter (list_or_iter)
+    if type(list_or_iter) == "function" then return list_or_iter end
+
+    return coroutine.wrap (function()
+        for i=1,#list_or_iter do
+            coroutine.yield(list_or_iter[i])
+        end
+    end)
+end
+
+local function each (list, func)
+    for i in iter(list) do
+        func(i)
+    end
+    return list
+end
+
+local function detect (list, func)
+    for i in iter(list) do
+        if func(i) then return i end
+    end
+    return nil
+end
+
+local function reject (list, func)
+    local selected = {}
+    for i in iter(list) do
+        if not func(i) then selected[#selected+1] = i end
+    end
+    return selected
+end
 
 -- leave as is, please
 room = {
@@ -34,19 +64,19 @@ local allpredicates = {
 }
 
 function insertaction (dst, src, f)
-    for __, verb in pairs(src.verbs) do
+    for _, verb in pairs(src.verbs) do
         if dst[verb] == nil then
             dst[verb] = {}
         end
-        for __, first in pairs(src.nouns.first) do
+        for _, first in pairs(src.nouns.first) do
             if dst[verb][first] == nil then
                 dst[verb][first] = {}
             end
-            for __, predicate in pairs(src.predicates) do
+            for _, predicate in pairs(src.predicates) do
                 if dst[verb][first][predicate] == nil then
                     dst[verb][first][predicate] = {}
                 end
-                for __, second in pairs(src.nouns.second) do
+                for _, second in pairs(src.nouns.second) do
                     if first ~= second then
                          dst[verb]
                             [first]
@@ -91,13 +121,13 @@ end
 
 function deleteinventoryitem(t)
     if type(t) ~= 'table' then t = { t } end
-    _.each(
+    each(
         t,
-        function (reject)
-            inventory = _.reject(
+        function (target)
+            inventory = reject(
                 inventory,
                 function (item)
-                    return item == reject
+                    return item == target
                 end
             )
         end
@@ -105,12 +135,12 @@ function deleteinventoryitem(t)
 end
 
 function detectinventoryitem(item)
-    return _.detect(inventory, function (i) return i == item end )
+    return detect(inventory, function (i) return i == item end )
 end
 
 function insertinventoryitem(t)
     if type(t) ~= 'table' then t = { t } end
-    _.each(
+    each(
         t,
         function (new)
             if not detectinventoryitem(new) then table.insert(inventory, new) end
@@ -240,7 +270,7 @@ end
 
 function makeFSM (t)
     local a = {}
-    for __, v in ipairs(t) do
+    for _, v in ipairs(t) do
         local old, event, state, action = v[1], v[2], v[3], v[4]
         if a[old] == nil then a[old] = {} end
         a[old][event] = { state = state, action = action(event, state) }
