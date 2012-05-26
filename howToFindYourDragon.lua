@@ -244,9 +244,10 @@ local function neverendingmeadow (event, state)
             insertcommand('c', 'catch')
             gbl.options.c = 'Catch one; if you can'
         end
-        if gbl.conditions.milesinthemeadow == 6 then
+        if gbl.conditions.milesinthemeadow == 7 then
             gbl.health = kombat[gbl.health.state]['hit'].action()
-            print('\t' .. gbl.health.report)
+            print('\t' .. string.gsub(gbl.health.report, 'hit', 'nauseated'))
+            entertocontinue()
         end
         return state
     end
@@ -369,6 +370,7 @@ locations = makeFSM({
     { 'ground',   'examine', 'ground',   fruitless_examination },
     { 'ground',   'north',   'woods',    ground_north_woods },
     { 'meadow',   'catch',   'meadow',   meadow_catch_meadow },
+    { 'meadow',   'examine', 'meadow',   fruitless_examination },
     { 'meadow',   'north',   'clearing', meadow_north_clearing },
     { 'meadow',   'south',   'meadow',   meadow_south_meadow },
     { 'meadow',   'west',    'meadow',   meadow_west_meadow },
@@ -439,8 +441,15 @@ insertaction(
             'use',
         },
         nouns = {
-            first = { 'the_strong_thin_vine' },
-            second = { 'the_branch' }
+            first = {
+            	'the_branch',
+            	'the_strong_thin_vine',
+            	
+            },
+            second = {
+            	'the_branch',
+            	'the_strong_thin_vine'
+            }
         },
         predicates = {
             'on',
@@ -458,8 +467,14 @@ insertaction(
             'use',
         },
         nouns = {
-            first = { 'the_hook_and_vine' },
-            second = { 'the_branch' }
+            first = {
+            	'the_hook_and_vine',
+            	'the_branch'
+            },
+            second = {
+            	'the_hook_and_vine',
+            	'the_branch'
+            }
         },
         predicates = {
             'on',
@@ -477,8 +492,14 @@ insertaction(
             'use',
         },
         nouns = {
-            first = { 'the_hook_shaped_bone' },
-            second = { 'the_strong_thin_vine' }
+            first = {
+            	'the_strong_thin_vine',
+            	'the_hook_shaped_bone'
+            },
+            second = {
+            	'the_strong_thin_vine',
+            	'the_hook_shaped_bone'
+            }
         },
         predicates = {
             'on',
@@ -496,8 +517,14 @@ insertaction(
             'use',
         },
         nouns = {
-            first = { 'the_hook_shaped_bone' },
-            second = { 'the_branch_and_vine' }
+            first = {
+            	'the_hook_shaped_bone',
+            	'the_branch_and_vine'
+            },
+            second = {
+            	'the_hook_shaped_bone',
+            	'the_branch_and_vine'
+            }
         },
         predicates = {
             'on',

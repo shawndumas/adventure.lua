@@ -1,0 +1,46 @@
+local function writefile (filename, s)
+    local f, e = io.open(filename, 'w')
+    if not f then return raise(e) end
+    f:write(s)
+    f:close()
+    return true
+end
+
+local function readfile (filename)
+    local f, e = io.open(filename, 'r')
+    if not f then return raise(e) end
+    local s, e = f:read('*a')
+    f:close()
+    if not s then return raise(e) end
+    return s
+end
+
+local function makesavestring ()
+end
+
+gbl = {
+    name = nil,
+    roomswithenemies = {
+        'room01',
+        'room02'
+    },
+    commands = {
+        n = 'north',
+        s = 'south',
+        e = 'east',
+        w = 'west',
+        x = 'examine'
+    },
+    enemytypes = {
+        'tiny_drone',
+        'small_drone',
+        'drone',
+        'large_drone'
+    },
+    inventory = {
+        'the_inevitable_round_hole'
+    },
+    conditions = {
+        timesinroom00 = 1
+    }
+}
