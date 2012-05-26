@@ -530,6 +530,10 @@ prompt = (function ()
                 gbl.options.q = 'Quit'
                 gbl.options.x = 'Examine'
                 gbl.options.i = 'Inventory'
+                if game.filename and game.filename ~= '' then
+                    gbl.options.v = 'Save'
+                    gbl.options.l = 'Load'
+                end
                 print('\n  Your options are:')
                 for k, v in pairsByKeys(
                         gbl.options,
@@ -564,6 +568,133 @@ prompt = (function ()
     end
 end)()
 
+local function fileexists (filename)
+    local f, e = io.open(filename)
+    local r = f ~= nil
+    if f then f:close() end
+    return r
+end
+
+local function writefile (filename, s)
+    local f, e = io.open(filename, 'w')
+    f:write(s)
+    f:close()
+    return true
+end
+
+local function readfile (filename)
+    local f, e = io.open(filename, 'r')
+    local s, e = f:read('*a')
+    f:close()
+    return s
+end
+
+local function tabletostring (t)
+    local function iskeyword (s)
+        return (
+            type(s) == 'string' and
+            s:find('^[%a_][%w_]*$') and
+            not ({
+                ["and"] = true,
+                ["break"] = true,
+                ["do"] = true,
+                ["else"] = true,
+                ["elseif"] = true,
+                ["end"] = true,
+                ["false"] = true,
+                ["for"] = true,
+                ["function"] = true,
+                ["if"] = true,
+                ["in"] = true,
+                ["local"] = true,
+                ["nil"] = true,
+                ["not"] = true,
+                ["or"] = true,
+                ["repeat"] = true,
+                ["return"] = true,
+                ["then"] = true,
+                ["true"] = true,
+                ["until"] = true,
+                ["while"] = true
+            })[s]
+        )
+    end
+    local set = ' = '
+    if space == '' then set = '=' end
+    space = space or '  '
+    local lines = {}
+    local line = ''
+    local tables = {}
+    local function put (s)
+        if #s > 0 then
+            line = line .. s
+        end
+    end
+    local function putln (s)
+        if #line > 0 then
+            line = line .. s
+            table.insert(lines, line)
+            line = ''
+        else
+            table.insert(lines, s)
+        end
+    end
+    local function quote (v)
+        return tonumber(v) ~= nil and v or '"' .. v .. '"'
+    end
+    local function eatlastcomma ()
+        local n, lastch = #lines
+        local lastch = lines[n]:sub(-1, -1)
+        if lastch == ',' then
+            lines[n] = lines[n]:sub(1, -2)
+        end
+    end
+    local writeit
+    writeit = function (t, oldindent, indent)
+        local typ = type(t)
+        if typ ~= 'string' and  typ ~= 'table' then
+            putln(quote(tostring(t)) .. ',')
+        elseif typ == 'string' then
+            if t:find('\n') then
+                putln('[[\n' .. t .. ']],')
+            else
+                putln(quote(t) .. ',')
+            end
+        elseif typ == 'table' then
+            if tables[t] then
+                putln('<cycle>,')
+                return
+            end
+            tables[t] = true
+            local newindent = indent .. space
+            putln('{')
+            local used = {}
+            for i, val in ipairs(t) do
+                put(indent)
+                writeit(val, indent, newindent)
+                used[i] = true
+            end
+            for key, val in pairs(t) do
+                local numkey = type(key) == 'number'
+                if not numkey or not used[key] then
+                    if numkey or not iskeyword(key) then
+                        key = index(numkey, key)
+                    end
+                    put(indent .. key .. set)
+                    writeit(val, indent, newindent)
+                end
+            end
+            eatlastcomma()
+            putln(oldindent  ..  '},')
+        else
+            putln(tostring(t) .. ',')
+        end
+    end
+    writeit(t,'', space)
+    eatlastcomma()
+    return table.concat(lines, #space > 0 and '\n' or '')
+end
+
 function go (g, c)
     extend(gbl, g)
     extend(gbl, {
@@ -577,21 +708,34 @@ function go (g, c)
         prowess = {
             state = 'wimpy',
             report = ''
-        }
+        },
+        previousresponse = ''
     })
     extend(cfg, c)
     local previousaction = locations['start']['begin'].action
-    local previousresponse = ''
     local response = ''
     gbl.location = previousaction()
     repeat
-        previousresponse = response
+        gbl.previousresponse = response
         response = string.lower(prompt())
         if response == 'q' or game.stop or game.done then break end
         if response == 'i' then
             enterinventory()
-            if previousresponse ~= '' and previousresponse ~= 'x' and previousresponse ~= 'i' then
+            if gbl.previousresponse ~= '' and gbl.previousresponse ~= 'x' and gbl.previousresponse ~= 'i' then
                 previousaction()
+            end
+        elseif response == 'v' then
+            writefile(game.filename, tabletostring(gbl))
+            print('\n\nGame saved.')
+            entertocontinue()
+        elseif response == 'l' then
+            if fileexists(game.filename) then
+                assert(loadstring('gbl = ' .. readfile(game.filename)))()
+                print('\n\nGame loaded.')
+                entertocontinue()
+            else
+                print('\n\nNo saved game file to load.')
+                entertocontinue()
             end
         elseif gbl.commands[response] then
             previousaction = locations[gbl.location][gbl.commands[response]].action

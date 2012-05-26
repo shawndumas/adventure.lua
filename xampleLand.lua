@@ -4,6 +4,7 @@ require 'adventure'
 game = {
     done = false,
     stop = false,
+    filename = 'xampleLand.save.txt',
     defaultname = 'Friend',
     introtext = wrap("\nWelcome {name}, This is an example adventure. Not much fun as a game though, sorry.")
 }

@@ -3,6 +3,7 @@ require 'adventure'
 game = {
     done = false,
     stop = false,
+    filename = 'theHomingRing.save.txt',
     defaultname = 'Tulkas',
     introtext = '\nWelcome {name}, to the shortest adventure ever.\n\nWhen your mother passed away your father brought you to this sad little land.\n"For a better life", he said. But this backward place has exiled your father.\nYou were away on an errand and were not at home when it happened.\nWhat little knowledge you have of this awful event you received by reading\na very short note hurriedly scrawled.\n\n\t"Dearest {name},\n\t    My homing ring is in dread cave.\n\tPutting it on you will come to me. Hurry...\n\n\t-- Your loving Dad"'
 }

@@ -3,6 +3,7 @@ require 'adventure'
 game = {
     done = false,
     stop = false,
+    filename = 'howToFindYourDragon.save.txt',
     defaultname = 'Hiccup',
     introtext = wrap("\nWelcome {name}, You are riding your dragon over a tree on a hill. Suddenly you bump into the tree. Your dragon flies one way, and you fall, with the tree breaking your fall.")
 }
