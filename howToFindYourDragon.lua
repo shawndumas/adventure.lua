@@ -265,7 +265,11 @@ end
 -- examination function factories
 local function woods_examine_woods (event, state)
     return function ()
-        if not (detectinventoryitem('the_branch') or detectinventoryitem('the_fishing_rod')) then
+        if not (
+                detectinventoryitem('the_branch') or
+                detectinventoryitem('the_branch_and_vine') or
+                detectinventoryitem('the_fishing_rod')
+            ) then
             print(wrap('\n\nA fallen branch lies among the strewn leaves. (Branch taken.)'))
             insertinventoryitem('the_branch')
         elseif not detectinventoryitem('the_tinder') then
@@ -295,7 +299,11 @@ end
 
 local function river_examine_river (event, state)
     return function ()
-        if not (detectinventoryitem('the_hook_shaped_bone') or detectinventoryitem('the_fishing_rod')) then
+        if not (
+            detectinventoryitem('the_hook_shaped_bone') or
+            detectinventoryitem('the_hook_and_vine') or
+            detectinventoryitem('the_fishing_rod')
+        ) then
             print(wrap('\n\nWhen you peer into the beautiful shining water, a long killer spearfish jumps out at you. Startled you slip and catch yourself just before falling in. From your new vantage point you see a small hooked shaped bone in the shallows. (Bone taken.)'))
             insertinventoryitem('the_hook_shaped_bone')
         else
@@ -308,7 +316,12 @@ end
 
 local function clearing_examine_clearing (event, state)
     return function ()
-        if not (detectinventoryitem('the_strong_thin_vine') or detectinventoryitem('the_fishing_rod')) then
+        if not (
+                detectinventoryitem('the_strong_thin_vine') or
+                detectinventoryitem('the_hook_and_vine') or
+                detectinventoryitem('the_branch_and_vine') or
+                detectinventoryitem('the_fishing_rod')
+        ) then
             print(wrap('\n\nAn extraordinarily strong and thin vine is wrapped around the far side of rock. With difficulty you pry it loose. (Vine taken.)'))
             insertinventoryitem('the_strong_thin_vine')
         else
@@ -444,7 +457,7 @@ insertaction(
             first = {
             	'the_branch',
             	'the_strong_thin_vine',
-            	
+
             },
             second = {
             	'the_branch',
