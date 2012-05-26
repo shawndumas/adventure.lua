@@ -246,7 +246,7 @@ local function neverendingmeadow (event, state)
         end
         if gbl.conditions.milesinthemeadow == 7 then
             gbl.health = kombat[gbl.health.state]['hit'].action()
-            print('\t' .. string.gsub(gbl.health.report, 'hit', 'nauseated'))
+            print('\n\n\t[' .. string.gsub(gbl.health.report, 'hit', 'nauseated') .. ']')
             entertocontinue()
         end
         return state
