@@ -148,7 +148,7 @@ insertaction(
 )
 
 --========================================================
---enter the main loop, no touchy!
+--enter the main loop
 --========================================================
 go({
     --========================================================
@@ -184,7 +184,9 @@ go({
         timesinroom00 = 1
     }
 },
+--========================================================
 -- configuration for the fighting sub-engine
+--========================================================
 {
     hero = {
         hitmin = 3, -- where you start -- heroattack = math.random(cfg.hero.hitmin, cfg.hero.hitmax)
