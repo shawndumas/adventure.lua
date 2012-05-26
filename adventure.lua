@@ -640,7 +640,9 @@ local function tabletostring (t)
         end
     end
     local function quote (v)
-        return tonumber(v) ~= nil and v or '"' .. v .. '"'
+        local isnumber = (tonumber(v) ~= nil)
+        local isbool = (v == 'true' or v == 'false')
+        return (isnumber or isbool) and v or '"' .. v .. '"'
     end
     local function eatlastcomma ()
         local n, lastch = #lines

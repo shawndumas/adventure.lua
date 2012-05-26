@@ -554,7 +554,7 @@ local function lighttorch (step)
     return function (t)
         return function ()
             local r = stringifyaction(t)
-            lighttorchsteps[step] = true
+            gbl.conditions[step] = true
             if step == 'tinder_to_cloth' then
                 if not (lighttorchsteps['flint_and_rock_over_tinder']
                     and lighttorchsteps['cloth_on_torch'])
