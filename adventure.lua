@@ -1,5 +1,8 @@
 math.randomseed(os.time())
 
+gbl = {}
+cfg = {}
+
 local function iter (list_or_iter)
     if type(list_or_iter) == "function" then return list_or_iter end
 
@@ -32,12 +35,16 @@ local function reject (list, func)
     return selected
 end
 
--- leave as is, please
-room = {
-    location = '',
-    description = '',
-    options = {},
-}
+local function extend (dst, src)
+    for k, v in pairs(src) do
+        if type(v) == 'table' then
+            dst[k] = {}
+            extend (dst[k], v)
+        else
+            dst[k] = v
+        end
+    end
+end
 
 local allverbs = {
     'drop',
@@ -124,8 +131,8 @@ function deleteinventoryitem(t)
     each(
         t,
         function (target)
-            inventory = reject(
-                inventory,
+            gbl.inventory = reject(
+                gbl.inventory,
                 function (item)
                     return item == target
                 end
@@ -135,7 +142,7 @@ function deleteinventoryitem(t)
 end
 
 function detectinventoryitem(item)
-    return detect(inventory, function (i) return i == item end )
+    return detect(gbl.inventory, function (i) return i == item end )
 end
 
 function insertinventoryitem(t)
@@ -143,7 +150,7 @@ function insertinventoryitem(t)
     each(
         t,
         function (new)
-            if not detectinventoryitem(new) then table.insert(inventory, new) end
+            if not detectinventoryitem(new) then table.insert(gbl.inventory, new) end
         end
     )
 end
@@ -185,11 +192,11 @@ function inventoryprompt(text, t, dst, test)
     local r = ''
     local valid = {}
     table.sort(t)
-    table.sort(inventory)
+    table.sort(gbl.inventory)
     repeat
         if (text:lower()):find('verb') then
             print('You can access the following items:\n')
-            for _, v in pairs(inventory) do
+            for _, v in pairs(gbl.inventory) do
                 io.write('  ' .. ununderscore(v) .. '\n')
             end
             print()
@@ -219,12 +226,12 @@ end
 
 function enterinventory()
     repeat
-        if #inventory < 1 then
+        if #gbl.inventory < 1 then
             print('\nYou have no items and there are no items here to interact with.')
             break
-        elseif #inventory < 2 then
+        elseif #gbl.inventory < 2 then
             print('You have access to the following items:\n')
-            for _, v in pairs(inventory) do
+            for _, v in pairs(gbl.inventory) do
                 io.write('  ' .. ununderscore(v) .. '\n')
             end
             break
@@ -238,13 +245,13 @@ function enterinventory()
 
             inventoryprompt('a verb', allverbs, 'verb')
             if inventoryresponse.verb == 'x' then break end
-            inventoryprompt('the first noun', inventory, 'first')
+            inventoryprompt('the first noun', gbl.inventory, 'first')
             if inventoryresponse.first == 'x' then break end
             inventoryprompt('an action', allpredicates, 'predicate')
             if inventoryresponse.predicate == 'x' then break end
             inventoryprompt(
                 'a second noun',
-                inventory,
+                gbl.inventory,
                 'second',
                 function (second)
                     return second ~= inventoryresponse.first
@@ -351,17 +358,6 @@ for i = 1, #prowesses do
 end
 experience = makeFSM(t)
 
-hero = {
-    health = {
-        state = 'healthy',
-        report = ''
-    },
-    prowess = {
-        state = 'wimpy',
-        report = ''
-    }
-}
-
 local function fight ()
     local stop = false
 
@@ -376,7 +372,7 @@ local function fight ()
             description = '',
             type = ''
         }
-        enemy.type = string.gsub(enemytypes[enemy.hp], '_', ' ')
+        enemy.type = string.gsub(gbl.enemytypes[enemy.hp], '_', ' ')
         enemy.description = string.gsub(ferocity[enemy.tohit - cfg.enemy.hitmod], '_', ' ') .. enemy.type
         return enemy
     end
@@ -385,7 +381,7 @@ local function fight ()
     local line = '\n' .. string.rep('*', 80)
     print(line .. '\n\tYou are attacked by ' .. enemy.description .. '!' .. line)
     repeat
-        local heroattack = math.random(cfg.hero.hitmin, cfg.hero.hitmax) + prowesses[hero.prowess.state]
+        local heroattack = math.random(cfg.hero.hitmin, cfg.hero.hitmax) + prowesses[gbl.prowess.state]
         if heroattack > cfg.hero.tohit then
             print('\n\tYou hit the ' .. enemy.type .. '.\n')
             enemy.hp = enemy.hp - 1
@@ -398,36 +394,36 @@ local function fight ()
         else
             local enemyattack = math.random(cfg.enemy.hitmin, cfg.enemy.hitmax)
             if enemyattack >= enemy.tohit then
-                hero.health = kombat[hero.health.state]['hit'].action()
-                print('\t' .. hero.health.report .. '\n')
+                gbl.health = kombat[gbl.health.state]['hit'].action()
+                print('\t' .. gbl.health.report .. '\n')
             else
                 print('\tThe ' .. enemy.type .. ' misses you.\n')
             end
         end
-        if (hero.health.state == 'dead' or enemy.hp == 0) then
+        if (gbl.health.state == 'dead' or enemy.hp == 0) then
             stop = true
         end
         entertocontinue()
     until stop
-    if hero.health.state == 'dead' then
+    if gbl.health.state == 'dead' then
         game.stop = true
-        room.description = ''
-        room.options = {}
+        gbl.description = ''
+        gbl.options = {}
     else
-        if hero.prowess.state ~= 'very_lethal' and hero.prowess.state ~= 'dead' then
-            hero.prowess = experience[hero.prowess.state]['trained'].action()
-            print('\n\t[' .. hero.prowess.report .. ']\n')
+        if gbl.prowess.state ~= 'very_lethal' and gbl.prowess.state ~= 'dead' then
+            gbl.prowess = experience[gbl.prowess.state]['trained'].action()
+            print('\n\t[' .. gbl.prowess.report .. ']\n')
             entertocontinue()
         end
     end
 end
 
 function deletecommand(k)
-    commands[k] = nil
+    gbl.commands[k] = nil
 end
 
 function insertcommand(k, v)
-    commands[k] = v
+    gbl.commands[k] = v
 end
 
 function entertocontinue ()
@@ -494,10 +490,10 @@ prompt = (function ()
             "Why do I get all the slow learners?",
             "See that thing with the letters on it?\n\n\tGood! Now see that list of options?\n\n\tFind the letter and push it.",
             "Hey, monkey, off the computer!",
-            game.name .. ", seriously?",
+            gbl.name .. ", seriously?",
             "Why not just try typing 'win'?",
             "BONK!\n\n\tYou run right in to solid rock.\n\n\tYour nose is bleeding.\n\n\tHappy now?",
-            game.name ..", really... it's not that hard."
+            gbl.name ..", really... it's not that hard."
         }
         local wisecrack = wisecracks[math.random(1, #wisecracks)]
         local line =  '\n' .. string.rep('=', 80) .. '\n'
@@ -511,34 +507,34 @@ prompt = (function ()
     local function intro ()
         print('  Enter your name:\n  (Or hit [enter] for ' .. game.defaultname .. '.)')
         io.write(' --> ')
-        game.name = io.read()
+        gbl.name = io.read()
 
-        if game.name == '' then game.name = game.defaultname end
-        local s = game.introtext:gsub('{name}', game.name)
+        if gbl.name == '' then gbl.name = game.defaultname end
+        local s = game.introtext:gsub('{name}', gbl.name)
         print(s)
     end
 
     return function ()
-        if not game.name then intro() end
-        local isenemy = (roomswithenemies[math.random(1, #roomswithenemies)] == room.location)
+        if not gbl.name then intro() end
+        local isenemy = (gbl.roomswithenemies[math.random(1, #gbl.roomswithenemies)] == gbl.location)
         if isenemy then fight() end
 
         if not game.stop then
             local line = '\n' .. string.rep('-', 80) .. '\n'
-            local header = line .. room.location:upper() .. line
+            local header = line .. gbl.location:upper() .. line
             print(header)
 
-            print( wrap(room.description))
+            print(wrap(gbl.description))
 
             if not game.done then
-                room.options.q = 'Quit'
-                room.options.x = 'Examine'
-                room.options.i = 'Inventory'
+                gbl.options.q = 'Quit'
+                gbl.options.x = 'Examine'
+                gbl.options.i = 'Inventory'
                 print('\n  Your options are:')
                 for k, v in pairsByKeys(
-                        room.options,
+                        gbl.options,
                         function (a, b)
-                            return room.options[a] < room.options[b]
+                            return gbl.options[a] < gbl.options[b]
                         end
                     ) do
                     print(' ', k, v)
@@ -548,9 +544,9 @@ prompt = (function ()
                 r = io.read()
 
                 if not isenemy then
-                    if hero.health.state ~= 'healthy' then
-                        hero.health = kombat[hero.health.state]['healed'].action()
-                        print('\n\t[' .. hero.health.report .. ']\n')
+                    if gbl.health.state ~= 'healthy' then
+                        gbl.health = kombat[gbl.health.state]['healed'].action()
+                        print('\n\t[' .. gbl.health.report .. ']\n')
                         entertocontinue()
                     end
                 end
@@ -561,31 +557,45 @@ prompt = (function ()
             exitmsg()
         end
 
-        r = (room.options[r] or r == 'win' or r == 'xyzzy') and r or ''
+        r = (gbl.options[r] or r == 'win' or r == 'xyzzy') and r or ''
         if not game.stop and (r == '' or r == 'win' or r == 'xyzzy') then duh(r) end
 
         return r
     end
 end)()
 
-function go ()
+function go (g, c)
+    extend(gbl, g)
+    extend(gbl, {
+        location = '',
+        description = '',
+        options = {},
+        health = {
+            state = 'healthy',
+            report = ''
+        },
+        prowess = {
+            state = 'wimpy',
+            report = ''
+        }
+    })
+    extend(cfg, c)
     local previousaction = locations['start']['begin'].action
     local previousresponse = ''
     local response = ''
-    room.location = previousaction()
+    gbl.location = previousaction()
     repeat
         previousresponse = response
         response = string.lower(prompt())
-        --print(response, commands[response])
         if response == 'q' or game.stop or game.done then break end
         if response == 'i' then
             enterinventory()
             if previousresponse ~= '' and previousresponse ~= 'x' and previousresponse ~= 'i' then
                 previousaction()
             end
-        elseif commands[response] then
-            previousaction = locations[room.location][commands[response]].action
-            room.location = locations[room.location][commands[response]].action()
+        elseif gbl.commands[response] then
+            previousaction = locations[gbl.location][gbl.commands[response]].action
+            gbl.location = locations[gbl.location][gbl.commands[response]].action()
         end
     until game.stop
 end
