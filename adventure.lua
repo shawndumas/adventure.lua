@@ -723,7 +723,13 @@ function go (g, c)
     if response == 'q' or game.stop or game.done then break end
     if response == 'i' then
       enterinventory()
-      if gbl.previousresponse ~= '' and gbl.previousresponse ~= 'x' and gbl.previousresponse ~= 'i' then
+      if
+        gbl.previousresponse ~= '' and
+        gbl.previousresponse ~= 'x' and
+        gbl.previousresponse ~= 'i' and
+        gbl.previousresponse ~= 'l' and
+        gbl.previousresponse ~= 'v'
+      then
         previousaction()
       end
     elseif response == 'v' then
