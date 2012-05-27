@@ -652,6 +652,7 @@ local function torchinsconce ()
       local r = ''
       local s = '\n\n[The lit torch is now permanently affixed in the sconce.]\n\nYou place the lit torch in the empty sconce. The door noiselessly swings inward on hidden hinges revealing a courtyard ringed with rock. In the center is a glowing pedestal upon which resides the ring. Placing the ring upon your finger a blinding flame of light envelops you whisking you away to your waiting father.\n\n\nTHE END'
       print('\n' .. wrap(s))
+      entertocontinue()
       game.done = true
       game.stop = true
       return r

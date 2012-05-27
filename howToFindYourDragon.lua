@@ -42,6 +42,7 @@ local function river_north_cave (event, state)
     else
       local description = '\n\nWith the lit torch in one hand and the fish in the other Toothless can both see you and smell the fish. He bounds out of the cave in a single dragonesque leap knocking you over eagerly eating the offered fish.\n\n\nTHE END'
       print('\n' .. wrap(description))
+      entertocontinue()
       game.done = true
       game.stop = true
     end
