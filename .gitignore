@@ -39,3 +39,7 @@ nbproject
 *.esproj
 *.sublime-project
 *.sublime-workspace
+
+# save files
+###################
+*.save.txt
