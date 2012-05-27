@@ -556,8 +556,8 @@ local function lighttorch (step)
             local r = stringifyaction(t)
             gbl.conditions[step] = true
             if step == 'tinder_to_cloth' then
-                if not (lighttorchsteps['flint_and_rock_over_tinder']
-                    and lighttorchsteps['cloth_on_torch'])
+                if not (gbl.conditions['flint_and_rock_over_tinder']
+                    and gbl.conditions['cloth_on_torch'])
                 then
                     gbl.conditions.cloth_on_torch = false
                     gbl.conditions.flint_and_rock_over_tinder = false
