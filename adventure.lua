@@ -3,36 +3,39 @@ math.randomseed(os.time())
 gbl = {}
 cfg = {}
 
-local function iter (list_or_iter)
-  if type(list_or_iter) == "function" then return list_or_iter end
+--============================================
+-- generic utility functions
+--============================================
+local function iter (t)
+  if type(t) == "function" then return t end
 
   return coroutine.wrap (function()
-    for i = 1, #list_or_iter do
-      coroutine.yield(list_or_iter[i])
+    for i = 1, #t do
+      coroutine.yield(t[i])
     end
   end)
 end
 
-local function each (list, func)
-  for i in iter(list) do
-    func(i)
+local function each (t, f)
+  for i in iter(t) do
+    f(i)
   end
-  return list
+  return t
 end
 
-local function detect (list, func)
-  for i in iter(list) do
-    if func(i) then return i end
+local function detect (t, f)
+  for i in iter(t) do
+    if f(i) then return i end
   end
   return nil
 end
 
-local function reject (list, func)
-  local selected = {}
-  for i in iter(list) do
-    if not func(i) then selected[#selected + 1] = i end
+local function reject (t, f)
+  local _ = {}
+  for i in iter(t) do
+    if not f(i) then _[#_ + 1] = i end
   end
-  return selected
+  return _
 end
 
 local function extend (dst, src)
@@ -46,6 +49,217 @@ local function extend (dst, src)
   end
 end
 
+function wrap (str, limit, indent01, indent02)
+  local str = str:gsub('\n', '#@')
+  str = str:gsub('#@', '\n')
+  indent01 = indent01 or ''
+  indent02 = indent02 or indent01
+  limit = limit or 80
+  local here = 1 - #indent02
+  return indent02 .. str:gsub(
+    '(%s+)()(%S+)()',
+    function(sp, st, word, fi)
+      if fi-here > limit then
+        here = st - #indent01
+        return '\n' .. indent01 .. word
+      end
+    end
+  )
+end
+
+function makeFSM (t)
+  local a = {}
+  for _, v in ipairs(t) do
+    local old, event, state, action = v[1], v[2], v[3], v[4]
+    if a[old] == nil then a[old] = {} end
+    a[old][event] = { state = state, action = action(event, state) }
+  end
+  return a
+end
+
+local function fileexists (filename)
+  local f, e = io.open(filename)
+  local r = f ~= nil
+  if f then f:close() end
+  return r
+end
+
+local function writefile (filename, s)
+  local f, e = io.open(filename, 'w')
+  f:write(s)
+  f:close()
+  return true
+end
+
+local function readfile (filename)
+  local f, e = io.open(filename, 'r')
+  local s, e = f:read('*a')
+  f:close()
+  return s
+end
+
+function tabletostring (t)
+  local set = ' = '
+  local space = '  '
+  local lines = {}
+  local line = ''
+  local tables = {}
+
+  local function quoteifnecessary (v)
+    if not v then
+      return ''
+    else
+    if v:find ' ' then v = '"' .. v .. '"' end
+    end
+    return v
+  end
+
+  local function iskeyword (s)
+    return
+      type(s) == 'string' and
+      s:find('^[%a_][%w_]*$') and
+      not ({
+        ["and"]      = true,
+        ["break"]    = true,
+        ["do"]       = true,
+        ["else"]     = true,
+        ["elseif"]   = true,
+        ["end"]      = true,
+        ["false"]    = true,
+        ["for"]      = true,
+        ["function"] = true,
+        ["if"]       = true,
+        ["in"]       = true,
+        ["local"]    = true,
+        ["nil"]      = true,
+        ["not"]      = true,
+        ["or"]       = true,
+        ["repeat"]   = true,
+        ["return"]   = true,
+        ["then"]     = true,
+        ["true"]     = true,
+        ["until"]    = true,
+        ["while"]    = true
+      })[s]
+  end
+
+  local function quote (s)
+    if type(s) == 'table' then
+      return tabletostring(s, '')
+    else
+      return ('%q'):format(tostring(s))
+    end
+  end
+
+  local function index (numkey, key)
+    if not numkey then key = quote(key) end
+    return '['..key..']'
+  end
+
+  local function put(s)
+    if #s > 0 then
+      line = line..s
+    end
+  end
+
+  local function putln (s)
+    if #line > 0 then
+      line = line..s
+      table.insert(lines, line)
+      line = ''
+    else
+      table.insert(lines, s)
+    end
+  end
+
+  local function eatlastcomma ()
+    local n,lastch = #lines
+    local lastch = lines[n]:sub(-1, -1)
+    if lastch == ',' then
+      lines[n] = lines[n]:sub(1, -2)
+    end
+  end
+
+  local stringify
+  stringify = function (t, oldindent, indent)
+    local typ = type(t)
+    if typ ~= 'string' and  typ ~= 'table' then
+      putln(quoteifnecessary(tostring(t)) .. ',')
+    elseif typ == 'string' then
+      if t:find('\n') then
+        putln('[[\n' .. t .. ']],')
+      else
+        putln(quote(t) .. ',')
+      end
+    elseif typ == 'table' then
+      if tables[t] then
+        putln('<cycle>,')
+        return
+      end
+      tables[t] = true
+      local newindent = indent .. space
+      putln('{')
+      local used = {}
+      for i,val in ipairs(t) do
+        put(indent)
+        stringify(val, indent, newindent)
+        used[i] = true
+      end
+      for key,val in pairs(t) do
+        local numkey = type(key) == 'number'
+        if not numkey or not used[key] then
+          if numkey or not iskeyword(key) then
+            key = index(numkey, key)
+          end
+          put(indent .. key .. set)
+          stringify(val, indent, newindent)
+        end
+      end
+      eatlastcomma()
+      putln(oldindent .. '},')
+    else
+      putln(tostring(t) .. ',')
+    end
+  end
+  stringify(t, '', space)
+  eatlastcomma()
+  return table.concat(lines, #space > 0 and '\n' or '')
+end
+
+--============================================
+-- adventure.lua specific utility functions
+--============================================
+function entertocontinue ()
+  print(string.rep('_', 80))
+  io.write('\tHit [enter] to continue.')
+  io.read()
+  print('\n')
+end
+
+local function ununderscore (s)
+  s = s:gsub('_', ' ')
+  return s
+end
+
+function deletecommand(k)
+  gbl.commands[k] = nil
+end
+
+function insertcommand(k, v)
+  gbl.commands[k] = v
+end
+
+function fruitless_examination (event, state)
+  return function ()
+    print('\nYour examination is fruitless.\n')
+    entertocontinue()
+    return state
+  end
+end
+
+--============================================
+-- inventory / actions
+--============================================
 local allverbs = {
   'drop',
   'hit',
@@ -69,6 +283,86 @@ local allpredicates = {
   'with',
   'under',
 }
+
+function deleteinventoryitem(t)
+  if type(t) ~= 'table' then t = { t } end
+  each(
+    t,
+    function (target)
+      gbl.inventory = reject(
+        gbl.inventory,
+        function (item)
+          return item == target
+        end
+      )
+    end
+  )
+end
+
+function detectinventoryitem(item)
+  return detect(gbl.inventory, function (i) return i == item end )
+end
+
+function insertinventoryitem(t)
+  if type(t) ~= 'table' then t = { t } end
+  each(
+    t,
+    function (new)
+      if not detectinventoryitem(new) then table.insert(gbl.inventory, new) end
+    end
+  )
+end
+
+local function failedaction(t)
+  local verb, first, predicate, second = unpack(t)
+  local r = string.gsub(
+    'You tried to ' ..
+    verb .. ' ' ..
+    first .. ' ' ..
+    predicate .. ' ' ..
+    second ..
+    " but it accomplished nothing.",
+    '_',
+    ' '
+  )
+  if verb == 'eat' then
+    r = string.gsub(
+      'You tried to ' ..
+      verb .. ' ' ..
+      first .. ' ' ..
+      "but it accomplished nothing.\n(Other than make a disgusting mess when you realized you couldn't eat " .. first .. " and you spat it back out.)",
+      '_',
+      ' '
+    )
+  end
+  return r
+end
+
+local function tryaction(t)
+  local verb, first, predicate, second = unpack(t)
+  local r = failedaction(t)
+  if actions[verb]
+    and actions[verb][first]
+    and actions[verb][first][predicate]
+    and actions[verb][first][predicate][second] then
+    r = actions[verb][first][predicate][second]()
+  end
+  return r
+end
+
+function stringifyaction(t)
+  local verb, first, predicate, second = unpack(t)
+  return string.gsub(
+    'You ' ..
+    verb .. ' ' ..
+    first .. ' ' ..
+    predicate .. ' ' ..
+    second ..
+    '.',
+    '_',
+    ' '
+  )
+end
 
 function insertaction (dst, src, f)
   for _, verb in pairs(src.verbs) do
@@ -101,91 +395,7 @@ function insertaction (dst, src, f)
   end
 end
 
-local function failedaction(t)
-  local verb, first, predicate, second = unpack(t)
-  local r = string.gsub(
-    'You tried to ' ..
-    verb .. ' ' ..
-    first .. ' ' ..
-    predicate .. ' ' ..
-    second ..
-    " but it accomplished nothing.",
-    '_',
-    ' '
-  )
-  if verb == 'eat' then
-    r = string.gsub(
-      'You tried to ' ..
-      verb .. ' ' ..
-      first .. ' ' ..
-      "but it accomplished nothing.\n(Other than make a disgusting mess when you realized you couldn't eat " .. first .. " and you spat it back out.)",
-      '_',
-      ' '
-    )
-  end
-  return r
-end
-
-function deleteinventoryitem(t)
-  if type(t) ~= 'table' then t = { t } end
-  each(
-    t,
-    function (target)
-      gbl.inventory = reject(
-        gbl.inventory,
-        function (item)
-          return item == target
-        end
-      )
-    end
-  )
-end
-
-function detectinventoryitem(item)
-  return detect(gbl.inventory, function (i) return i == item end )
-end
-
-function insertinventoryitem(t)
-  if type(t) ~= 'table' then t = { t } end
-  each(
-    t,
-    function (new)
-      if not detectinventoryitem(new) then table.insert(gbl.inventory, new) end
-    end
-  )
-end
-
-function stringifyaction(t)
-  local verb, first, predicate, second = unpack(t)
-  return string.gsub(
-    'You ' ..
-    verb .. ' ' ..
-    first .. ' ' ..
-    predicate .. ' ' ..
-    second ..
-    '.',
-    '_',
-    ' '
-  )
-end
-
-local function tryaction(t)
-  local verb, first, predicate, second = unpack(t)
-  local r = failedaction(t)
-  if actions[verb]
-    and actions[verb][first]
-    and actions[verb][first][predicate]
-    and actions[verb][first][predicate][second] then
-    r = actions[verb][first][predicate][second]()
-  end
-  return r
-end
-
-local function ununderscore (s)
-  s = s:gsub('_', ' ')
-  return s
-end
-
+-- inventory UI
 function inventoryprompt(text, t, dst, test)
   text = text or 'one'
   test = test or function () return true end
@@ -275,16 +485,9 @@ function enterinventory()
   until string.lower(io.read()) == 'x' or game.stop or game.done
 end
 
-function makeFSM (t)
-  local a = {}
-  for _, v in ipairs(t) do
-    local old, event, state, action = v[1], v[2], v[3], v[4]
-    if a[old] == nil then a[old] = {} end
-    a[old][event] = { state = state, action = action(event, state) }
-  end
-  return a
-end
-
+--============================================
+-- fighting
+--============================================
 local function reportstate (event, state)
   local a = {
     "'re_",
@@ -358,6 +561,7 @@ for i = 1, #prowesses do
 end
 experience = makeFSM(t)
 
+-- fighting UI
 local function fight ()
   local stop = false
 
@@ -418,47 +622,9 @@ local function fight ()
   end
 end
 
-function deletecommand(k)
-  gbl.commands[k] = nil
-end
-
-function insertcommand(k, v)
-  gbl.commands[k] = v
-end
-
-function entertocontinue ()
-  print(string.rep('_', 80))
-  io.write('\tHit [enter] to continue.')
-  io.read()
-  print('\n')
-end
-
-function fruitless_examination (event, state)
-  return function ()
-    print('\nYour examination is fruitless.\n')
-    entertocontinue()
-    return state
-  end
-end
-
-function wrap (str, limit, indent01, indent02)
-  local str = str:gsub('\n', '#@')
-  str = str:gsub('#@', '\n')
-  indent01 = indent01 or ''
-  indent02 = indent02 or indent01
-  limit = limit or 80
-  local here = 1 - #indent02
-  return indent02 .. str:gsub(
-    '(%s+)()(%S+)()',
-    function(sp, st, word, fi)
-      if fi-here > limit then
-        here = st - #indent01
-        return '\n' .. indent01 .. word
-      end
-    end
-  )
-end
-
+--============================================
+-- main UI
+--============================================
 prompt = (function ()
   local r = ''
 
@@ -568,135 +734,9 @@ prompt = (function ()
   end
 end)()
 
-local function fileexists (filename)
-  local f, e = io.open(filename)
-  local r = f ~= nil
-  if f then f:close() end
-  return r
-end
-
-local function writefile (filename, s)
-  local f, e = io.open(filename, 'w')
-  f:write(s)
-  f:close()
-  return true
-end
-
-local function readfile (filename)
-  local f, e = io.open(filename, 'r')
-  local s, e = f:read('*a')
-  f:close()
-  return s
-end
-
-local function tabletostring (t)
-  local function iskeyword (s)
-    return (
-      type(s) == 'string' and
-      s:find('^[%a_][%w_]*$') and
-      not ({
-        ["and"] = true,
-        ["break"] = true,
-        ["do"] = true,
-        ["else"] = true,
-        ["elseif"] = true,
-        ["end"] = true,
-        ["false"] = true,
-        ["for"] = true,
-        ["function"] = true,
-        ["if"] = true,
-        ["in"] = true,
-        ["local"] = true,
-        ["nil"] = true,
-        ["not"] = true,
-        ["or"] = true,
-        ["repeat"] = true,
-        ["return"] = true,
-        ["then"] = true,
-        ["true"] = true,
-        ["until"] = true,
-        ["while"] = true
-      })[s]
-    )
-  end
-  local set = ' = '
-  if space == '' then set = '=' end
-  space = space or '  '
-  local lines = {}
-  local line = ''
-  local tables = {}
-  local function put (s)
-    if #s > 0 then
-      line = line .. s
-    end
-  end
-  local function putln (s)
-    if #line > 0 then
-      line = line .. s
-      table.insert(lines, line)
-      line = ''
-    else
-      table.insert(lines, s)
-    end
-  end
-  local function quote (v)
-    local isnumber = (tonumber(v) ~= nil)
-    local isbool = (v == 'true' or v == 'false')
-    return (isnumber or isbool) and v or '"' .. v .. '"'
-  end
-  local function eatlastcomma ()
-    local n, lastch = #lines
-    local lastch = lines[n]:sub(-1, -1)
-    if lastch == ',' then
-      lines[n] = lines[n]:sub(1, -2)
-    end
-  end
-  local writeit
-  writeit = function (t, oldindent, indent)
-    local typ = type(t)
-    if typ ~= 'string' and  typ ~= 'table' then
-      putln(quote(tostring(t)) .. ',')
-    elseif typ == 'string' then
-      if t:find('\n') then
-        putln('[[\n' .. t .. ']],')
-      else
-        putln(quote(t) .. ',')
-      end
-    elseif typ == 'table' then
-      if tables[t] then
-        putln('<cyclical>,')
-        return
-      end
-      tables[t] = true
-      local newindent = indent .. space
-      putln('{')
-      local used = {}
-      for i, val in ipairs(t) do
-        put(indent)
-        writeit(val, indent, newindent)
-        used[i] = true
-      end
-      for key, val in pairs(t) do
-        local numkey = type(key) == 'number'
-        if not numkey or not used[key] then
-          if numkey or not iskeyword(key) then
-            key = index(numkey, key)
-          end
-          put(indent .. key .. set)
-          writeit(val, indent, newindent)
-        end
-      end
-      eatlastcomma()
-      putln(oldindent ..  '},')
-    else
-      putln(tostring(t) .. ',')
-    end
-  end
-  writeit(t,'', space)
-  eatlastcomma()
-  return table.concat(lines, #space > 0 and '\n' or '')
-end
-
+--============================================
+-- main loop
+--============================================
 function go (g, c)
   extend(gbl, g)
   extend(gbl, {
@@ -725,10 +765,7 @@ function go (g, c)
       enterinventory()
       if
         gbl.previousresponse ~= '' and
-        gbl.previousresponse ~= 'x' and
-        gbl.previousresponse ~= 'i' and
-        gbl.previousresponse ~= 'l' and
-        gbl.previousresponse ~= 'v'
+        not ({ 'i', 'l', 'v', 'x' })[gbl.previousresponse]
       then
         previousaction()
       end
