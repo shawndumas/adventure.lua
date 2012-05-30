@@ -687,7 +687,7 @@ prompt = (function ()
 
     if not game.stop then
       local line = '\n' .. string.rep('-', 80) .. '\n'
-      local header = line .. gbl.location:upper() .. line
+      local header = line .. ununderscore(gbl.location:upper()) .. line
       print(header)
 
       print(wrap(gbl.description))
@@ -765,7 +765,7 @@ function go (g, c)
       enterinventory()
       if
         gbl.previousresponse ~= '' and
-        not ({ 'i', 'l', 'v', 'x' })[gbl.previousresponse]
+        ({ i = false, l = false, v = false, x = false })[gbl.previousresponse]
       then
         previousaction()
       end
