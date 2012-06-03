@@ -174,7 +174,7 @@ function passageway_west_engineering (event, state)
     gbl.description = "You are in the engineering room. There are buttons and dials in rows on the control panel in the center of the room. There is an iron tube a foot wide and three long next to the control panel."
     gbl.options = {
       e = "Go East; back to the passageway.",
-      s = "Go South; to the bod bay"
+      s = "Go South; to the pod bay"
     }
     return state
   end
