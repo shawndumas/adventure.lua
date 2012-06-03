@@ -1,6 +1,4 @@
 -- todo -- fight for access card
--- todo -- make escape pods location
--- todo -- make escape pods examine ==> end text
 
 require 'adventure'
 
@@ -176,6 +174,7 @@ function passageway_west_engineering (event, state)
     gbl.description = "You are in the engineering room. There are buttons and dials in rows on the control panel in the center of the room. There is an iron tube a foot wide and three long next to the control panel."
     gbl.options = {
       e = "Go East; back to the passageway.",
+      s = "Go South; to the bod bay"
     }
     return state
   end
@@ -199,6 +198,25 @@ local function start_begin_quarters (event, state)
     gbl.description = "you are in general quarters, siting on the one peace of furniture you have; your bed. There is a door going south out of general quarters."
     gbl.options = {
       s = 'Go South; to the passageway',
+    }
+    return state
+  end
+end
+function pod_bay_north_engineering (event, state)
+   return function ()
+    gbl.description = "description"
+    gbl.options = {
+      s = "Go South; back to pod bay",
+      e = "Go East; to the passageway",
+    }
+    return state
+  end
+end
+function engineering_south_pod_bay (event, state)
+   return function ()
+    gbl.description = "description"
+    gbl.options = {
+      n = "Go North; back to engineering",
     }
     return state
   end
@@ -241,6 +259,15 @@ local function engineering_examine_engineering (event, state)
     return state
   end
 end
+local function pod_bay_examine_pod_bay (event, state)
+  return function ()
+      local description = '\n\ndescription\n\n\nTHE END' -- todo -- float out into space
+      print('\n' .. wrap(description))
+      game.done = true
+      game.stop = true
+    return state
+  end
+end
 
 locations = makeFSM({
   -- examine rows
@@ -251,7 +278,8 @@ locations = makeFSM({
   { 'passageway',       'examine', 'passageway',       fruitless_examination },
   { 'quarters',         'examine', 'quarters',         fruitless_examination },
   { 'southern_battery', 'examine', 'southern_battery', southern_battery_examine_southern_battery },
-  { 'engineering',      'examine', 'engineering',      engineering_examine_engineering},
+  { 'engineering',      'examine', 'engineering',      engineering_examine_engineering },
+  { 'pod_bay',          'examine', 'pod_bay',          pod_bay_examine_pod_bay },
   -- location rows
   { 'bunker',           'east',    'helm',             bunker_east_helm },
   { 'bunker',           'north',   'northern_battery', bunker_north_northern_battery },
@@ -267,6 +295,8 @@ locations = makeFSM({
   { 'passageway',       'west',    'engineering',      passageway_west_engineering },
   { 'quarters',         'south',   'passageway',       quarters_south_passageway },
   { 'southern_battery', 'north',   'bunker',           southern_battery_north_bunker },
+  { 'pod_bay',          'north',   'engineering',      pod_bay_north_engineering },
+  { 'engineering',      'south',   'pod_bay',          engineering_south_pod_bay },
   -- default starting location row
   { 'start',            'begin',   'quarters',         start_begin_quarters },
 })
