@@ -42,7 +42,7 @@ function passageway_south_mess_hall (event, state)
       n = 'Go North; back to passageway',
     }
     if gbl.conditions.inmesshall == 2 then
-      gbl.description = gbl.description .. '\n\noverheard conversation...' -- todo -- add overheard conversation...
+      gbl.description = gbl.description .. '"\n\nAs you wander into the mess hall your senses tell you there are people behind the replicator partition. Then you hear voices engaged in tense conversation. "Ok; Ok. I get that he has to be... you know. But how are we going to make it look like an accid..." the other voice cuts in abruptly, "Shut up, someone\'s coming." Two men come walking slowly from behind the partition. Both look startled to see you there. As they walk by one looks at you stupidly, but the other nudges him.'
       gbl.roomswithenemies = {
         'helm',
         'bunker',
@@ -104,10 +104,11 @@ function bunker_west_passageway (event, state)
 end
 function bunker_east_helm (event, state)
    return function ()
-    gbl.description = "You are in the helm; a huge window is in front of you. A man sits in front of a control panel in front of the window. A blue glowing screen is in the center of the control panel."
+    gbl.description = "You are in the helm; a huge window is in front of you. A control panel is in front of the window. A blue glowing screen is in the center of the control panel."
     gbl.options = {
       w = "Go West; back to the bunker",
     }
+    insertinventoryitem('computer_terminal')
     return state
   end
 end
@@ -117,6 +118,7 @@ function bunker_north_northern_battery (event, state)
     gbl.options = {
      s  = "Go South; back to the bunker",
     }
+    insertinventoryitem('computer_terminal')
     return state
   end
 end
@@ -126,6 +128,7 @@ function bunker_south_southern_battery (event, state)
     gbl.options = {
      n = "Go North; back to the bunker",
     }
+    insertinventoryitem('computer_terminal')
     return state
   end
 end
@@ -137,8 +140,8 @@ function helm_west_bunker (event, state)
       e = "Go East; to the helm",
       n = "Go North; to the northern battery",
       s = "Go South; to the southern battery",
-
     }
+    deleteinventoryitem('computer_terminal')
     return state
   end
 end
@@ -152,6 +155,7 @@ function  northern_battery_south_bunker (event, state)
     if detectinventoryitem('access_card') then
       gbl.options['e'] = 'Go East; to the helm'
     end
+    deleteinventoryitem('computer_terminal')
     return state
   end
 end
@@ -166,6 +170,7 @@ function southern_battery_north_bunker (event, state)
     if detectinventoryitem('access_card') then
       gbl.options['e'] = 'Go East; to the helm'
     end
+    deleteinventoryitem('computer_terminal')
     return state
   end
 end
@@ -176,10 +181,11 @@ function passageway_west_engineering (event, state)
       e = "Go East; back to the passageway.",
       s = "Go South; to the pod bay"
     }
+    insertinventoryitem('computer_terminal')
     return state
   end
 end
-function  engineering_east_passageway (event, state)
+function engineering_east_passageway (event, state)
    return function ()
     gbl.description = "description"
     gbl.options = {
@@ -187,6 +193,26 @@ function  engineering_east_passageway (event, state)
       s = 'Go South; to the mess hall',
       e = 'Go East; to the bunker',
       w = 'Go West; back to engineering',
+    }
+    deleteinventoryitem('computer_terminal')
+    return state
+  end
+end
+function pod_bay_north_engineering (event, state)
+   return function ()
+    gbl.description = "description" -- todo -- description
+    gbl.options = {
+      s = "Go South; back to pod bay",
+      e = "Go East; to the passageway",
+    }
+    return state
+  end
+end
+function engineering_south_pod_bay (event, state)
+   return function ()
+    gbl.description = "description" -- todo -- description
+    gbl.options = {
+      n = "Go North; back to engineering",
     }
     return state
   end
@@ -202,71 +228,29 @@ local function start_begin_quarters (event, state)
     return state
   end
 end
-function pod_bay_north_engineering (event, state)
-   return function ()
-    gbl.description = "description"
-    gbl.options = {
-      s = "Go South; back to pod bay",
-      e = "Go East; to the passageway",
-    }
-    return state
-  end
-end
-function engineering_south_pod_bay (event, state)
-   return function ()
-    gbl.description = "description"
-    gbl.options = {
-      n = "Go North; back to engineering",
-    }
-    return state
-  end
-end
 --========================================================
 -- examination function factories
-local function battery_examine (state)
+local function terminal_examine (state)
   return function ()
-    print(wrap("\n\nThe terminal says, '*** ACCESS DENIED: No access card detected ***'"))
+    print(wrap("\n\nYou see a computer terminal here with an access card slot centered just below the screen."))
     entertocontinue()
     return state
   end
 end
 local function southern_battery_examine_southern_battery (event, state)
-  return battery_examine (state)
+  return terminal_examine (state)
 end
 local function northern_battery_examine_northern_battery (event, state)
-  return battery_examine (state)
+  return terminal_examine (state)
 end
 local function helm_examine_helm (event, state)
-  return function ()
-    if not gbl.conditions.engineeringaccess then
-      print(wrap("\n\nThe terminal says, '*** ACCESS GRANTED: Access card detected; access level sufficient ***'\n\nIt takes awhile but you finally figure out how to grant yourself engineering access."))
-      gbl.conditions.engineeringaccess = true
-    else
-      print('\nYour examination is fruitless.\n')
-    end
-    entertocontinue()
-    return state
-  end
+  return terminal_examine (state)
 end
 local function engineering_examine_engineering (event, state)
-  return function ()
-    if not gbl.conditions.engineeringaccess then
-      print(wrap("\n\nThe terminal says, '*** ACCESS DENIED: Access card detected; access level insufficient ***'\n\n"))
-    else
-      print('\n\njettison warp-core') -- todo -- jettison warp-core
-    end
-    entertocontinue()
-    return state
-  end
+  return terminal_examine (state)
 end
 local function pod_bay_examine_pod_bay (event, state)
-  return function ()
-      local description = '\n\ndescription\n\n\nTHE END' -- todo -- float out into space
-      print('\n' .. wrap(description))
-      game.done = true
-      game.stop = true
-    return state
-  end
+  return terminal_examine (state)
 end
 
 locations = makeFSM({
@@ -302,6 +286,69 @@ locations = makeFSM({
 })
 
 actions = {}
+
+local function useterminal ()
+  return function (t)
+    return function ()
+      local function batteryterminal ()
+          local msg = detectinventoryitem('access_card') and 'Access card detected; access level insufficient' or 'No access card detected'
+          local r = "\n\nAfter a beep that can only be described as rude, the terminal says, '*** ACCESS DENIED: " .. msg .. " ***'"
+          return r
+      end
+      local terminals = {
+        helm = function ()
+          local msg = gbl.conditions.engineeringaccess and "that you have already granted yourself engineering access." or "how to grant yourself engineering access."
+          local r = "\n\nThe terminal says, '*** ACCESS GRANTED: Access card detected; access level sufficient ***'\n\nIt takes awhile but you finally figure out " .. msg
+          gbl.conditions.engineeringaccess = true
+          return r
+        end,
+        engineering = function ()
+          local r = "\n\nThe terminal says, '*** ACCESS DENIED: Access card detected; access level insufficient ***'\n\n"
+          if gbl.conditions.engineeringaccess then
+            r = "\n\njettison warp-core" -- todo -- jettison warp-core
+          end
+          return r
+        end,
+        southern_battery = batteryterminal,
+        northern_battery = batteryterminal,
+      }
+      if gbl.location ~= 'pod_bay' then
+        return wrap(stringifyaction(t) .. terminals[gbl.location]())
+      else
+        local description = '\n\ndescription\n\n\nTHE END' -- todo -- float out into space
+        print('\n' .. wrap(description))
+        game.done = true
+        game.stop = true
+      end
+    end
+  end
+end
+
+insertaction(
+  actions,
+  {
+    verbs = {
+      'push',
+      'put',
+      'use',
+    },
+    nouns = {
+      first = {
+        'access_card',
+      },
+      second = {
+        'computer_terminal',
+      }
+    },
+    predicates = {
+      'in',
+      'on',
+      'to',
+      'with',
+    }
+  },
+  useterminal()
+)
 
 go({
   name = nil,
