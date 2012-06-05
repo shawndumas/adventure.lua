@@ -176,7 +176,7 @@ function southern_battery_north_bunker (event, state)
 end
 function passageway_west_engineering (event, state)
    return function ()
-    gbl.description = "You are in the engineering room. There are buttons and dials in rows on the control panel in the center of the room. There is an iron tube a foot wide and three long next to the control panel."
+    gbl.description = "You are in the engineering room. There are buttons and dials -- rows and rows of them -- on the control panel in the center of the room. There is an iron tube a foot wide and three feet long next to the control panel."
     gbl.options = {
       e = "Go East; back to the passageway.",
       s = "Go South; to the pod bay"
@@ -200,7 +200,7 @@ function engineering_east_passageway (event, state)
 end
 function pod_bay_north_engineering (event, state)
    return function ()
-    gbl.description = "You are in the engineering room. There are buttons and dials in rows on the control panel in the center of the room. There is an iron tube a foot wide and three long next to the control panel."
+    gbl.description = "You are in the engineering room. here are buttons and dials -- rows and rows of them -- on the control panel in the center of the room. There is an iron tube a foot wide and three feet long next to the control panel."
     gbl.options = {
       s = "Go South; back to pod bay",
       e = "Go East; to the passageway",
@@ -210,7 +210,7 @@ function pod_bay_north_engineering (event, state)
 end
 function engineering_south_pod_bay (event, state)
    return function ()
-    gbl.description = "Round doors leading to the little round pods line the walls of the pod bay it is rather dark in hear compared to the rest of the ship. Little wisps of steam come from the edges of the doors."
+    gbl.description = "Round doors leading to the little round pods line the walls of the pod bay it is rather dark in here compared to the rest of the ship. Little wisps of steam come from the edges of the doors."
     gbl.options = {
       n = "Go North; back to engineering",
     }
@@ -305,7 +305,7 @@ local function useterminal ()
         engineering = function ()
           local r = "\n\nThe terminal says, '*** ACCESS DENIED: Access card detected; access level insufficient ***'\n\n"
           if gbl.conditions.engineeringaccess then
-            r = "\n\nYou have had some training with these control panel things, not much but enough to know the basics. You punch a few buttons; and suddenly the ship rocks violently, throwing you back. After a little wile the tremors die down and you pick your self up. "
+            r = "\n\nYou have had some training with these control panel things, not much but enough to know the basics. You punch a few buttons; suddenly the ship rocks violently, throwing you back. After a little while the tremors die down and you pick your self up."
           end
           return r
         end,
@@ -315,7 +315,7 @@ local function useterminal ()
       if gbl.location ~= 'pod_bay' then
         return wrap(stringifyaction(t) .. terminals[gbl.location]())
       else
-        local description = '\n\nYou walk into the pod bay; pick the captain\'s pod, it being the best, crawl through the door and pound the "eject" button. The door twists shut and the pod starts up the thrusters. It heads for the nearest space station; Three miles away.\n\n\nTHE END'
+        local description = '\n\nYou walk into the pod bay; pick the captain\'s pod, it being the best, crawl through the door and pound the "eject" button. The door twists shut and the pod starts up the thrusters. It heads for the nearest space station; a mere 1.284 light seconds away.\n\n\nTHE END'
         print('\n' .. wrap(description))
         game.done = true
         game.stop = true
@@ -334,7 +334,7 @@ insertaction(
     },
     nouns = {
       first = {
-        'access_card', -- todo -- delete before release
+        'access_card',
       },
       second = {
         'computer_terminal',
@@ -375,7 +375,7 @@ go({
     'shadow_guard',
   },
   inventory = {
-    'access_card',
+    'access_card', -- todo -- delete before release
   }
 },
 {
