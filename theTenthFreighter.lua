@@ -1,5 +1,3 @@
--- todo -- fight for access card
-
 require 'adventure'
 
 game = {
@@ -23,6 +21,7 @@ local function  quarters_south_passageway (event, state)
     if gbl.conditions.engineeringaccess then
       gbl.options['w'] = 'Go West; to engineering'
     end
+    getcard()
     return state
   end
 end
@@ -32,6 +31,7 @@ function passageway_north_quarters (event, state)
     gbl.options = {
       s = 'Go South; back to the passageway',
     }
+    getcard()
     return state
   end
 end
@@ -42,7 +42,7 @@ function passageway_south_mess_hall (event, state)
       n = 'Go North; back to passageway',
     }
     if gbl.conditions.inmesshall == 2 then
-      gbl.description = gbl.description .. '"\n\nAs you wander into the mess hall your senses tell you there are people behind the replicator partition. Then you hear voices engaged in tense conversation. "Ok; Ok. I get that he has to be... you know. But how are we going to make it look like an accid..." the other voice cuts in abruptly, "Shut up, someone\'s coming." Two men come walking slowly from behind the partition. Both look startled to see you there. As they walk by one looks at you stupidly, but the other nudges him.'
+      gbl.description = gbl.description .. '"\n\nAs you wander into the mess hall your senses tell you there are people behind the replicator partition. Then you hear voices engaged in tense conversation. "Ok; Ok. I get that he has to be... you know. But how are we going to make it look like an accid..." the other voice cuts in abruptly, "Shut up, someone\'s coming." Two men come walking slowly from behind the partition. Both look startled to see you there. As they walk by one looks at you stupidly but the other nudges him and looks menacingly at you. As soon as they are out of eyesight you hear the intruder alert sounding...'
       gbl.roomswithenemies = {
         'helm',
         'bunker',
@@ -54,9 +54,9 @@ function passageway_south_mess_hall (event, state)
         'quarters',
         'southern_battery',
       }
-    else
-      gbl.conditions.inmesshall = gbl.conditions.inmesshall + 1
     end
+    gbl.conditions.inmesshall = gbl.conditions.inmesshall + 1
+    getcard()
     return state
   end
 end
@@ -71,6 +71,7 @@ function mess_hall_north_passageway (event, state)
     if gbl.conditions.engineeringaccess then
       gbl.options['w'] = 'Go West; to engineering'
     end
+    getcard()
     return state
   end
 end
@@ -85,6 +86,7 @@ function passageway_east_bunker (event, state)
     if detectinventoryitem('access_card') then
       gbl.options['e'] = 'Go East; to the helm'
     end
+    getcard()
     return state
   end
 end
@@ -99,6 +101,7 @@ function bunker_west_passageway (event, state)
     if gbl.conditions.engineeringaccess then
       gbl.options['w'] = 'Go West; to engineering'
     end
+    getcard()
     return state
   end
 end
@@ -109,6 +112,7 @@ function bunker_east_helm (event, state)
       w = "Go West; back to the bunker",
     }
     insertinventoryitem('computer_terminal')
+    getcard()
     return state
   end
 end
@@ -119,6 +123,7 @@ function bunker_north_northern_battery (event, state)
      s  = "Go South; back to the bunker",
     }
     insertinventoryitem('computer_terminal')
+    getcard()
     return state
   end
 end
@@ -129,6 +134,7 @@ function bunker_south_southern_battery (event, state)
      n = "Go North; back to the bunker",
     }
     insertinventoryitem('computer_terminal')
+    getcard()
     return state
   end
 end
@@ -142,6 +148,7 @@ function helm_west_bunker (event, state)
       s = "Go South; to the southern battery",
     }
     deleteinventoryitem('computer_terminal')
+    getcard()
     return state
   end
 end
@@ -156,6 +163,7 @@ function  northern_battery_south_bunker (event, state)
       gbl.options['e'] = 'Go East; to the helm'
     end
     deleteinventoryitem('computer_terminal')
+    getcard()
     return state
   end
 end
@@ -171,6 +179,7 @@ function southern_battery_north_bunker (event, state)
       gbl.options['e'] = 'Go East; to the helm'
     end
     deleteinventoryitem('computer_terminal')
+    getcard()
     return state
   end
 end
@@ -182,6 +191,7 @@ function passageway_west_engineering (event, state)
       s = "Go South; to the pod bay"
     }
     insertinventoryitem('computer_terminal')
+    getcard()
     return state
   end
 end
@@ -195,6 +205,7 @@ function engineering_east_passageway (event, state)
       w = 'Go West; back to engineering',
     }
     deleteinventoryitem('computer_terminal')
+    getcard()
     return state
   end
 end
@@ -205,6 +216,7 @@ function pod_bay_north_engineering (event, state)
       s = "Go South; back to pod bay",
       e = "Go East; to the passageway",
     }
+    getcard()
     return state
   end
 end
@@ -214,6 +226,7 @@ function engineering_south_pod_bay (event, state)
     gbl.options = {
       n = "Go North; back to engineering",
     }
+    getcard()
     return state
   end
 end
@@ -225,6 +238,7 @@ local function start_begin_quarters (event, state)
     gbl.options = {
       s = 'Go South; to the passageway',
     }
+    getcard()
     return state
   end
 end
@@ -251,6 +265,16 @@ local function engineering_examine_engineering (event, state)
 end
 local function pod_bay_examine_pod_bay (event, state)
   return terminal_examine (state)
+end
+
+--========================================================
+-- check if the player gets the access card (invoked by all location functions)
+function getcard()
+  if gbl.health.state ~= 'healthy' and not detectinventoryitem('access_card') then
+    print(wrap("\n\nAs you are about to leave you notice that your attacker, when he fell to the ground unconscious, must have dropped an access card. (Access card taken.)"))
+    insertinventoryitem('access_card')
+    entertocontinue()
+  end
 end
 
 locations = makeFSM({
@@ -315,7 +339,7 @@ local function useterminal ()
       if gbl.location ~= 'pod_bay' then
         return wrap(stringifyaction(t) .. terminals[gbl.location]())
       else
-        local description = '\n\nYou walk into the pod bay; pick the captain\'s pod, it being the best, crawl through the door and pound the "eject" button. The door twists shut and the pod starts up the thrusters. It heads for the nearest space station; a mere 1.284 light seconds away.\n\n\nTHE END'
+        local description = '\n\nYou walk into the pod bay; pick the captain\'s pod, it being the best, crawl through the door and pound the "eject" button. The door twists shut and the pod starts up the thrusters. It heads for the nearest space station; a mere 1.284 light seconds away.\n\n\nTHE END\n\n'
         print('\n' .. wrap(description))
         game.done = true
         game.stop = true
@@ -375,7 +399,6 @@ go({
     'shadow_guard',
   },
   inventory = {
-    'access_card', -- todo -- delete before release
   }
 },
 {
