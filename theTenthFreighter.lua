@@ -5,22 +5,19 @@ game = {
   stop = false,
   filename = 'theTenthFreighter.save.txt',
   defaultname = 'Zigar',
-  introtext = wrap("\nWelcome {name}, You are an ambassador. You are also the only passenger the tenth freighter has ever had. The on freighter is on its way to Zaga Alpha; a well colonized planet the outskirts of the deadly alien Trelzi's territory. Because the United Federation fears a war with the deadly Trelzi, and because this was the only ship headed in that direction, this freighter is hurrying you toward an important round of tense negotiations.")
+  introtext = wrap("\nWelcome {name}, You are an ambassador. You are also the only passenger the tenth freighter has ever had. This freighter is on its way to Zaga Alpha; a well colonized planet on the outskirts of the deadly alien Trelzi's territory. Because the United Federation fears a war with the deadly Trelzi, and because this was the only ship headed in that direction, this freighter is hurrying you toward an important round of tense negotiations.")
 }
 
 --========================================================
 -- location function factories
 local function  quarters_south_passageway (event, state)
   return function ()
-    gbl.description = "The passageway. (To the West is Engineering which is locked.)"
     gbl.options = {
       n = 'Go North; back to quarters',
       s = 'Go South; to the mess hall',
       e = 'Go East; to the bunker',
     }
-    if gbl.conditions.engineeringaccess then
-      gbl.options['w'] = 'Go West; to engineering'
-    end
+    checkengineering()
     getcard()
     return state
   end
@@ -62,45 +59,36 @@ function passageway_south_mess_hall (event, state)
 end
 function mess_hall_north_passageway (event, state)
    return function ()
-    gbl.description = "You are back in the passageway. (To the West is Engineering which is locked.)"
     gbl.options = {
       n = 'Go North; to the quarters',
       s = 'Go South; back to the mess hall',
       e = 'Go East; to the bunker',
     }
-    if gbl.conditions.engineeringaccess then
-      gbl.options['w'] = 'Go West; to engineering'
-    end
+    checkengineering(true)
     getcard()
     return state
   end
 end
 function passageway_east_bunker (event, state)
   return function ()
-    gbl.description = "You are in the bunker."
     gbl.options = {
       w = "Go West; back to the passageway",
       n = "Go North; to the northern battery",
       s = "Go South; to the southern battery",
     }
-    if detectinventoryitem('access_card') then
-      gbl.options['e'] = 'Go East; to the helm'
-    end
+    checkhelm()
     getcard()
     return state
   end
 end
 function bunker_west_passageway (event, state)
    return function ()
-    gbl.description = "You are back in the passageway. (To the West is Engineering which is locked.)"
     gbl.options = {
       n = 'Go North; to the quarters',
       s = 'Go South; to the mess hall',
       e = 'Go East; back to the bunker',
     }
-    if gbl.conditions.engineeringaccess then
-      gbl.options['w'] = 'Go West; to engineering'
-    end
+    checkengineering(true)
     getcard()
     return state
   end
@@ -140,7 +128,6 @@ function bunker_south_southern_battery (event, state)
 end
 function helm_west_bunker (event, state)
    return function ()
-    gbl.description = "You are back in the bunker."
     gbl.options = {
       w = "Go West; back to the passageway",
       e = "Go East; to the helm",
@@ -154,14 +141,12 @@ function helm_west_bunker (event, state)
 end
 function  northern_battery_south_bunker (event, state)
    return function ()
-    gbl.description = "You are back in the bunker."
     gbl.options = {
+      w = "Go West; back to the passageway",
       n = "Go North; to the northern battery",
       s = "Go South; to the southern battery",
     }
-    if detectinventoryitem('access_card') then
-      gbl.options['e'] = 'Go East; to the helm'
-    end
+    checkhelm(true)
     deleteinventoryitem('computer_terminal')
     getcard()
     return state
@@ -169,16 +154,12 @@ function  northern_battery_south_bunker (event, state)
 end
 function southern_battery_north_bunker (event, state)
    return function ()
-    gbl.description = "You are back in the bunker."
     gbl.options = {
       w = "Go West; back to the passageway",
       n = "Go North; to the northern battery",
       s = "Go South; to the southern battery",
     }
-    if detectinventoryitem('access_card') then
-      gbl.options['e'] = 'Go East; to the helm'
-    end
-    deleteinventoryitem('computer_terminal')
+    checkhelm(true)
     getcard()
     return state
   end
@@ -197,7 +178,7 @@ function passageway_west_engineering (event, state)
 end
 function engineering_east_passageway (event, state)
    return function ()
-    gbl.description = "description"
+    gbl.description = "You are back in the passage."
     gbl.options = {
       n = 'Go North; to the quarters',
       s = 'Go South; to the mess hall',
@@ -211,7 +192,7 @@ function engineering_east_passageway (event, state)
 end
 function pod_bay_north_engineering (event, state)
    return function ()
-    gbl.description = "You are in the engineering room. here are buttons and dials -- rows and rows of them -- on the control panel in the center of the room. There is an iron tube a foot wide and three feet long next to the control panel."
+    gbl.description = "You are in the engineering room."
     gbl.options = {
       s = "Go South; back to pod bay",
       e = "Go East; to the passageway",
@@ -222,7 +203,7 @@ function pod_bay_north_engineering (event, state)
 end
 function engineering_south_pod_bay (event, state)
    return function ()
-    gbl.description = "Round doors leading to the little round pods line the walls of the pod bay it is rather dark in here compared to the rest of the ship. Little wisps of steam come from the edges of the doors."
+    gbl.description = "Round doors leading to the little round pods line the walls of the pod bay. It is rather dark in here compared to the rest of the ship. Little wisps of steam come from the edges of the doors."
     gbl.options = {
       n = "Go North; back to engineering",
     }
@@ -234,7 +215,7 @@ end
 -- start function factory
 local function start_begin_quarters (event, state)
   return function ()
-    gbl.description = "you are in general quarters, siting on the one peace of furniture you have; your bed. There is a door going south out of general quarters."
+    gbl.description = "you are in general quarters, sitting on the one piece of furniture you have; your bed. There is a door going south out of general quarters."
     gbl.options = {
       s = 'Go South; to the passageway',
     }
@@ -271,10 +252,30 @@ end
 -- check if the player gets the access card (invoked by all location functions)
 function getcard()
   if gbl.health.state ~= 'healthy' and not detectinventoryitem('access_card') then
-    print(wrap("\n\nAs you are about to leave you notice that your attacker, when he fell to the ground unconscious, must have dropped an access card. (Access card taken.)"))
+    print(wrap("\n\nAs you are about to leave you notice that your attacker, when he fell to the ground unconscious, must have dropped an access card. (Access card taken.)\n\nWith card in hand a plan forms in your mind; you have to stop this ship and get off."))
     insertinventoryitem('access_card')
     entertocontinue()
   end
+end
+-- check engineering access
+function checkengineering (isback)
+    local back = isback and ' back ' or ''
+    local engineering = ' (To the West is Engineering which is locked.)'
+    if gbl.conditions.engineeringaccess then
+      gbl.options['w'] = 'Go West; to engineering'
+      engineering = ''
+    end
+    gbl.description = "You are" .. back .. "in the passageway." .. engineering
+end
+-- check helm access
+function checkhelm (isback)
+  local back = isback and ' back ' or ''
+    local helm = ' (To the East is the Helm which is locked.)'
+    if detectinventoryitem('access_card') then
+      gbl.options['e'] = 'Go East; to the helm'
+      helm = ''
+    end
+    gbl.description = "You are" .. back .. "in the bunker." .. helm
 end
 
 locations = makeFSM({
@@ -322,7 +323,7 @@ local function useterminal ()
       local terminals = {
         helm = function ()
           local msg = gbl.conditions.engineeringaccess and "that you have already granted yourself engineering access." or "how to grant yourself engineering access."
-          local r = "\n\nThe terminal says, '*** ACCESS GRANTED: Access card detected; access level sufficient ***'\n\nIt takes awhile but you finally figure out " .. msg
+          local r = "\n\nThe terminal says, '*** ACCESS GRANTED: Access card detected; access level sufficient ***'\n\nIt takes a while but you finally figure out " .. msg
           gbl.conditions.engineeringaccess = true
           return r
         end,
