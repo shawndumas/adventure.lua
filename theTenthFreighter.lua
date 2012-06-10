@@ -41,7 +41,7 @@ function passageway_south_mess_hall (event, state)
     gbl.options = {
       n = 'Go North; back to passageway',
     }
-    if gbl.conditions.inmesshall == 2 then
+    if gbl.conditions.inmesshall == 1 then
       gbl.description = gbl.description .. '"\n\nAs you wander into the mess hall your senses tell you there are people behind the replicator partition. Then you hear voices engaged in tense conversation. "Ok; Ok. I get that he has to be... you know. But how are we going to make it look like an accid..." the other voice cuts in abruptly, "Shut up, someone\'s coming." Two men come walking slowly from behind the partition. Both look startled to see you there. As they walk by one looks at you stupidly but the other nudges him and looks menacingly at you. As soon as they are out of eyesight you hear the intruder alert sounding...'
       gbl.roomswithenemies = {
         'helm',
@@ -378,7 +378,6 @@ go({
   name = nil,
   conditions = {
     engineeringaccess = false,
-    inhelm = 0,
     inmesshall = 0,
   },
   roomswithenemies = {
