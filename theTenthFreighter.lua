@@ -342,6 +342,7 @@ local function useterminal ()
       else
         local description = '\n\nYou walk into the pod bay; pick the captain\'s pod, it being the best, crawl through the door and pound the "eject" button. The door twists shut and the pod starts up the thrusters. It heads for the nearest space station; a mere 1.284 light seconds away.\n\n\nTHE END\n\n'
         print('\n' .. wrap(description))
+        entertocontinue()
         game.done = true
         game.stop = true
       end
