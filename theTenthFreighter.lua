@@ -259,7 +259,7 @@ function getcard()
 end
 -- check engineering access
 function checkengineering (isback)
-    local back = isback and ' back ' or ''
+    local back = isback and ' back ' or ' '
     local engineering = ' (To the West is Engineering which is locked.)'
     if gbl.conditions.engineeringaccess then
       gbl.options['w'] = 'Go West; to engineering'
@@ -269,7 +269,7 @@ function checkengineering (isback)
 end
 -- check helm access
 function checkhelm (isback)
-  local back = isback and ' back ' or ''
+  local back = isback and ' back ' or ' '
     local helm = ' (To the East is the Helm which is locked.)'
     if detectinventoryitem('access_card') then
       gbl.options['e'] = 'Go East; to the helm'
