@@ -1,0 +1,449 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Adventure.lua by shawndumas</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Adventure.lua</h1>
+        <p>Lua Text Adventure Engine</p>
+        <p class="view"><a href="https://github.com/shawndumas/adventure.lua">View the Project on GitHub <small>shawndumas/adventure.lua</small></a></p>
+        <ul>
+          <li><a href="https://github.com/shawndumas/adventure.lua/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/shawndumas/adventure.lua/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/shawndumas/adventure.lua">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p><strong>Important</strong>: If you haven't played one of the example adventures yet go ahead and mess around with <a href="https://github.com/shawndumas/adventure.lua/blob/master/xampleLand.lua">xample land</a> now. If you don't have Lua installed yet and you are on windows what you want is <a href="http://code.google.com/p/luaforwindows/">Lua for Windows</a>. For the mac, install <a href="http://mxcl.github.com/homebrew/">Homebrew</a>, and then do "brew install lua" from the terminal. For linux... well, you probably already know what to do if you are rocking a linux distro.</p>
+
+<h3>State + Event --&gt; State ==&gt; Invocation</h3>
+
+<p>The main dispatch table for any adventure program will look something like this:</p>
+
+<pre><code>locations = makeFSM({
+    { 'room00', 'examine', 'room00', fruitless_examination },
+    { 'room00', 'north',   'room01', room00_north_room01 },
+    { 'room01', 'examine', 'room01', room01_examine_room01 },
+    { 'room01', 'north',   'room02', room01_north_room02 },
+    { 'room01', 'south',   'room00', room01_south_room00 },
+    { 'room02', 'examine', 'room02', fruitless_examination },
+    { 'room02', 'south',   'room01', room02_south_room01 },
+    -- default starting area
+    { 'start',  'begin',   'room00', start_begin_room00 }
+})
+</code></pre>
+
+<p>The four fields in each of the rows are:</p>
+
+<ol>
+<li><p>the initial <em>state</em> (the location the player started in)</p></li>
+<li><p>an <em>event</em> (the command the player chooses)</p></li>
+<li><p>the new <em>state</em> (the location the player will end up at)</p></li>
+<li><p>the function that gets invoked</p></li>
+</ol><p>Or stated another way:</p>
+
+<pre><code>[initial state] + [an event] --&gt; [new state] ==&gt; [invocation]
+</code></pre>
+
+<p>During the main loop the player is repeatedly asked to choose a command. If a player were in the <em>state</em> [room00], ie. the location 'room00', and chose the <em>event</em> [north], ie. the command North, then the dispatch row that matches will have its corresponding function invoked. </p>
+
+<p>The matching dispatch row would look like this:</p>
+
+<pre><code>{ 'room00', 'north', 'room01', room00_north_room01 }
+</code></pre>
+
+<p>That function will be invoked with two parameters; the <em>event</em> [north], which was the command chosen by the player, and the new <em>state</em> [room01], which is the player's new location.</p>
+
+<p>Let's see what that particular function might look like:</p>
+
+<pre><code>local function room00_north_room01 (event, state)
+    return function ()
+        gbl.description = "the description of room01..."
+        gbl.options = {
+            s = 'Go South; back to room00 (whence we came)'
+        }
+        return state
+    end
+end
+</code></pre>
+
+<p>(You may have noticed that the function returns an anonymous function. And that the inner function returns the <em>state</em> that the location creation function passes in. If that's confusing don't worry about it for now. Especially if all you want to do is make new adventures. All we are concerned with now is that inner function.)</p>
+
+<p>The inner function does three things:</p>
+
+<ol>
+<li><p>the setting of the property gbl.description to a description of the now current location</p></li>
+<li><p>the setting of the property gbl.options with new commands that are now available to the player</p></li>
+<li><p>returning the <em>state</em> which is now the location called [room01]</p></li>
+</ol><p>Remember, the process is:</p>
+
+<pre><code>[initial state] + [an event] --&gt; [new state] ==&gt; [invocation]
+</code></pre>
+
+<p>In doing it this way one can do things other than just moving from location to location. For example look at the rows that include the <em>event</em> [examine]:</p>
+
+<pre><code>{ 'room00', 'examine', 'room00', fruitless_examination },
+{ 'room01', 'examine', 'room01', room01_examine_room01 },
+{ 'room02', 'examine', 'room02', fruitless_examination },
+</code></pre>
+
+<p>The player starts in a location, chooses the <em>event</em> [examine] and they end up in the same location. Let's see what that particular function might look like:</p>
+
+<pre><code>function room01_examine_room01 (event, state)
+    return function ()
+        if not detectinventoryitem('someitem') then
+            print(wrap('\n\nYou discover some item.')
+            insertinventoryitem('someitem')
+        else
+            print('\nYour examination is fruitless.\n')
+        end
+        entertocontinue()
+        return state
+    end
+end
+</code></pre>
+
+<p>This function starts out by looking in the player's inventory. If the player hasn't already found the item 'someitem' it prints a message indicating that that item was found and then performs an insertion of that item into the player's inventory. If the player already had that item then the function prints a message indicating that nothing was found. It then returns the same <em>state</em>, the location [room01], so that the player will remain in the location in which the <em>event</em> [examine] was chosen as a command by the player.</p>
+
+<p>Remember, we used the same dispatch table to process the two <em>events</em> [north] and [examine], two very different <em>events</em>, in order to move the player [north] and to process the command [examine]. This flexibility allows the programmer to create new <em>events</em> at will. And not just those already listed. Take, for example, an infinite location. Here, first, the dispatch table rows:</p>
+
+<pre><code>{ 'meadow', 'south', 'meadow', meadow_south_meadow },
+{ 'meadow', 'west',  'meadow', meadow_west_meadow },
+</code></pre>
+
+<p>And now the corresponding functions:</p>
+
+<pre><code>local function neverendingmeadow (event, state)
+    return function ()
+        gbl.description = "Flies; little tiny flies everywhere."
+        gbl.options = {
+            n = 'Go North; to the clearing',
+            s = 'Go South; continuing in to the meadow',
+            w = 'Go West; continuing in to the meadow'
+        }
+        if not detectinventoryitem('the_small_fly') then
+            insertcommand('c', 'catch')
+            gbl.options.c = 'Catch one; if you can'
+        end
+        return state
+    end
+end
+
+local function meadow_south_meadow (event, state)
+    return neverendingmeadow(event, state)
+end
+
+local function meadow_west_meadow (event, state)
+    return neverendingmeadow(event, state)
+end
+</code></pre>
+
+<p>Notice that the player will never leave the [meadow] by going [south] or [west]. Notice also that we inserted a new <em>event</em> into the table of possible commands (if an inventory item was not detected, that is). If the new <em>event</em> [catch], an ad hoc command, is chosen in the <em>state</em> [meadow], a location, the adventure engine will index the dispatch looking for a row that looks like this:</p>
+
+<pre><code>{ 'meadow', 'catch', 'meadow', meadow_catch_meadow },
+</code></pre>
+
+<p>And invoke its corresponding function that might look like this:</p>
+
+<pre><code>local function meadow_catch_meadow (event, state)
+    return function ()
+        gbl.description = "The flies are fast and wary but you finally catch one."
+        gbl.options = {
+            n = 'Go North; to the clearing',
+            s = 'Go South; continuing in to the meadow',
+            w = 'Go West; continuing in to the meadow'
+        }
+        insertinventoryitem('the_small_fly')
+        return state
+    end
+end
+</code></pre>
+
+<p>One could create any number of ad hoc <em>events</em> and <em>states</em> in this way. (Just be sure to delete the ad hoc <em>event</em> when the player leaves the associated <em>state</em>; like so.)</p>
+
+<pre><code>deletecommand('c')
+</code></pre>
+
+<p>So, as you see, having the dispatch table designed in the following manner...</p>
+
+<pre><code>[initial state] + [an event] --&gt; [new state] ==&gt; [invocation]
+</code></pre>
+
+<p>... affords amazing flexibility with a very simple to program mechanic.</p>
+
+<h3>Verb + Noun + Predicate + Noun ==&gt; Invocation</h3>
+
+<p>The interaction of one item in the player's inventory against another item is called an action. Actions work by first creating a function to be invoked upon the player successfully applying one item to another using the verb(s) and predicate(s) you insert in the actions table.</p>
+
+<p>Consider the following example:</p>
+
+<pre><code>local function makeaconundrum ()
+    return function (t)
+        return function ()
+            local r = stringifyaction(t)
+            r = r .. '\n\n[You have (somehow) gotten the square peg into the round hole. (Good job!)]'
+            deleteinventoryitem({
+                'the_proverbial_square_peg',
+                'the_inevitable_round_hole',
+            })
+            insertinventoryitem('a_conundrum')
+            return r
+        end
+    end
+end
+</code></pre>
+
+<p>(Again you'll noticed that the function returns a function that returns another function. If that's confusing don't worry about it for now. Especially if all you want to do is make new adventures. All we are concerned with now are the two inner functions.) The first inner function is passed a table (here called 't') that consistent of the verb, the first noun, the predicate, and the second noun that were chosen by the user. This table is accessible to the innermost function and, in this example, is simply passed to the function called 'stringifyaction' and the return value is captured by 'r'.</p>
+
+<p>The function 'stringifyaction' turns the table in to a sentence much like the following:</p>
+
+<pre><code>You put the proverbial square peg in the inevitable round hole.
+</code></pre>
+
+<p>(Notice that the underscores are replaced with spaces.) That's just the verb, the first noun, the predicate, and the second noun selected by the player.</p>
+
+<p>After the capture, the innermost function appends the success message, deletes some inventory items, and then adds an inventory item. The innermost function finally returns a string (here called 'r'). The value of 'r' is, in this case:</p>
+
+<pre><code>You put the proverbial square peg in the inevitable round hole.
+
+[You have (somehow) gotten the square peg into the round hole. (Good job!)]
+</code></pre>
+
+<p>In order for the player to eventually cause the invocation of that function they must complete an inventory action that you create. Let's look at one that uses the discussed function now:</p>
+
+<pre><code>insertaction(
+    actions,
+    {
+        verbs = {
+            'drop',
+            'push',
+            'put',
+        },
+        nouns = {
+            first = { 'the_proverbial_square_peg' },
+            second = { 'the_inevitable_round_hole' }
+        },
+        predicates = {
+            'in',
+        }
+    },
+    makeaconundrum()
+)
+</code></pre>
+
+<p>What's going on here is the insertion of an action in to the table of actions available to the player (assuming they have the specified items in their inventory of course). The first parameter is the table that the action will be inserted in to. The second is a table of tables that declare which verb-noun-predicate-noun choices will trigger the invocation of the third parameter, a function. In this case the player could pick any of the following:</p>
+
+<pre><code>drop -- the_proverbial_square_peg -- in -- the_inevitable_round_hole
+push -- the_proverbial_square_peg -- in -- the_inevitable_round_hole
+put  -- the_proverbial_square_peg -- in -- the_inevitable_round_hole
+</code></pre>
+
+<p>Either of the nouns' tables can have more than one item. The end result is that the action can start with either noun and then end with the other. See the following:</p>
+
+<pre><code>nouns = {
+    first = {
+        'the_rock',
+        'the_stone'
+    },
+    second = {
+        'the_rock',
+        'the_stone'
+    }
+</code></pre>
+
+<p>In the previous instance if the player started with the rock then the second list provided to the player will not contain the rock but will contain the stone. Conversely, if the player started with the stone then the stone would be excluded and the rock would be listed in the second list of nouns. As in:</p>
+
+<pre><code>hit -- the_rock  -- on -- the_stone
+hit -- the_stone -- on -- the_rock
+</code></pre>
+
+<p>Or, like the following nouns table, where the noun in the first table can be applied successfully to any of the nouns in the second table:</p>
+
+<pre><code>nouns = {
+    first = { 'the_small_fly' },
+    second = {
+        'the_fishing_rod',
+        'the_hook_shaped_bone',
+        'the_hook_and_vine'
+    }
+}
+</code></pre>
+
+<p>Incidentally here are the tables representing all possible verbs and predicates:</p>
+
+<pre><code>local allverbs = {
+    'drop',
+    'hit',
+    'pull',
+    'push',
+    'put',
+    'throw',
+    'touch',
+    'use',
+}
+
+local allpredicates = {
+    'after',
+    'apart_from',
+    'at',
+    'before',
+    'in',
+    'on',
+    'over',
+    'to',
+    'with',
+    'under',
+}
+</code></pre>
+
+<h3>Settings, settings, and settings</h3>
+
+<p>The first set of settings are a table called game used by the adventure engine to determine certain default values. The following is an example game table (from <a href="https://github.com/shawndumas/adventure.lua/blob/master/xampleLand.lua">xampleLand.lua</a>)</p>
+
+<pre><code>game = {
+  done = false,
+  stop = false,
+  filename = 'xampleLand.save.txt',
+  defaultname = 'Friend',
+  introtext = wrap("\nWelcome {name}, This is an example adventure. Not much fun as a game though, sorry.")
+}
+</code></pre>
+
+<p>The sections are;</p>
+
+<ol>
+<li>
+<strong>done</strong>: Has the player died or won.</li>
+<li>
+<strong>stop</strong>: end the main loop exiting the game.</li>
+<li>
+<strong>filename</strong>: the name of the save-file for this adventure.</li>
+<li>
+<strong>defaultname</strong>: What the player's name will be if they opt not to supply one.</li>
+<li>
+<strong>introtext</strong>: The text that gets display initially. (Notice the use of the helper function wrap in the above example.)</li>
+</ol><p>Rounding out a tour of a minimal adventure is the invocation of the go function. Two tables need to be passed to the go function. The first is a table containing the settings for the adventure proper. The following is an example settings table (from <a href="https://github.com/shawndumas/adventure.lua/blob/master/xampleLand.lua">xampleLand.lua</a>):</p>
+
+<pre><code>local settings = {
+  name = nil,
+  roomswithenemies = {
+    'room01',
+    'room02'
+  },
+  commands = {
+    n = 'north',
+    s = 'south',
+    e = 'east',
+    w = 'west',
+    x = 'examine'
+  },
+  enemytypes = {
+    'tiny_drone',
+    'small_drone',
+    'drone',
+    'large_drone'
+  },
+  inventory = {
+    'the_inevitable_round_hole'
+  },
+  conditions = {
+    timesinroom00 = 1
+  }
+}
+</code></pre>
+
+<p>(Note: This table, with a few additional values, is the table that is used to create a save file.)</p>
+
+<p>The sections are;</p>
+
+<ol>
+<li>
+<strong>name</strong>: The name that the player choose when prompted.</li>
+<li>
+<strong>roomswithenemies</strong>: What rooms can an enemy be in. (Note: enemies will be in one of these rooms each turn.)</li>
+<li>
+<strong>commands</strong>: for command translation from single letter to full command.</li>
+<li>
+<strong>enemytypes</strong>: The names for the various enemies, from weakest to strongest (only four unless you make cfg.enemy.maxhp &gt; 4).</li>
+<li>
+<strong>inventory</strong>: The hero's items, stick items that you want the player to have at game start.</li>
+<li>
+<strong>conditions</strong>: For recording author configurable states, events, and conditions.</li>
+</ol><p>The second table is for the fighting sub-engine. The following is an example fight settings table (from <a href="https://github.com/shawndumas/adventure.lua/blob/master/xampleLand.lua">xampleLand.lua</a>):</p>
+
+<pre><code>local fightsettings = {
+  hero = {
+    hitmin = 3,
+    hitmax = 5,
+    tohit = 5
+  },
+  enemy = {
+    hitmin = 2,
+    hitmax = 7,
+    mintohit = 4,
+    maxtohit = 5,
+    minhp = 1,
+    maxhp = 4,
+    hitmod = 3
+  }
+}
+</code></pre>
+
+<p>The sections are;</p>
+
+<ol>
+<li>
+<strong>hero</strong>: Settings for the player...
+
+<ol>
+<li>
+<strong>hitmin</strong>: Where the player start out at. (As in, heroattack = math.random(cfg.hero.hitmin, cfg.hero.hitmax).)</li>
+<li>
+<strong>hitmax</strong>: The maximum amount of bad-ass-ness the player can be raised to. (As in, heroattack = math.random(cfg.hero.hitmin, cfg.hero.hitmax).)</li>
+<li>tohit : What the hero has to beat to hit the enemy. (As in, heroattack &gt; cfg.hero.tohit.)</li>
+</ol>
+</li>
+<li>
+<strong>enemy</strong>: Settings for the player's enemies...
+
+<ol>
+<li>
+<strong>hitmin</strong>: The first number passed to math.random when determining a hit. (As in, enemyattack = math.random(cfg.enemy.hitmin, cfg.enemy.hitmax).)</li>
+<li>
+<strong>hitmax</strong>: The second number passed to math.random when determining a hit. (As in, enemyattack = math.random(cfg.enemy.hitmin, cfg.enemy.hitmax).)</li>
+<li>
+<strong>mintohit</strong>: The min of what an enemy has to beat to hit the hero (the enemy is savage)</li>
+<li>
+<strong>maxtohit</strong>: The max of what an enemy has to beat to hit the hero (the enemy is menacing)</li>
+<li>
+<strong>minhp</strong>: The min hit points for an enemy (this matches the enemytypes).</li>
+<li>
+<strong>maxhp</strong>: The max hit points for an enemy (this matches the enemytypes).</li>
+<li>
+<strong>hitmod</strong>: The difference between the maxtohit and the two types of enemies (menacing, savage)</li>
+</ol>
+</li>
+</ol><p><a href="https://github.com/shawndumas/adventure.lua/blob/master/xampleLand.lua">Check out this very small example adventure</a></p>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/shawndumas">shawndumas</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+    
+  </body>
+</html>
