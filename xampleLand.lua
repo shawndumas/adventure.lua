@@ -1,6 +1,6 @@
 require 'adventure'
 
--- starting values, only change the last two items please
+-- starting values, only change the last three items please
 game = {
   done = false,
   stop = false,
